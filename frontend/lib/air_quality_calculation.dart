@@ -1,3 +1,4 @@
+// calculation is based on https://www.airnow.gov/sites/default/files/2020-05/aqi-technical-assistance-document-sept2018.pdf
 class AirQuality {
   static int calculation(
       double so2, double co, double o3, double pm10, double pm2_5, double no2) {

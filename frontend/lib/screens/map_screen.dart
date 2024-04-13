@@ -89,7 +89,7 @@ Future<List<dynamic>> getData() async {
   dynamic data;
   await dio
       .get(
-          'https://gis.brno.cz/ags1/rest/services/Hosted/chmi/FeatureServer/0/query?time=${now - 2 * 3600000}%2C+$now&outFields=name%2C+co_8h%2C+o3_1h%2C+no2_1h%2C+so2_1h%2C+pm10_1h%2C+pm2_5_1h%2C+pm10_24h%2C+actualized&returnGeometry=true&f=geojson')
+          'https://gis.brno.cz/ags1/rest/services/Hosted/chmi/FeatureServer/0/query?time=${now - 2 * 3660000}%2C+$now&outFields=name%2C+co_8h%2C+o3_1h%2C+no2_1h%2C+so2_1h%2C+pm10_1h%2C+pm2_5_1h%2C+pm10_24h%2C+actualized&returnGeometry=true&f=geojson')
       .then((response) {
     print(response.data['features']);
     data = response.data['features'];
@@ -97,20 +97,8 @@ Future<List<dynamic>> getData() async {
     print(error);
     return Future(() => null);
   });
-  // remove duplicate names and only keep the one with biggest timestamp
-  for (int i = 0; i < data.length; i++) {
-    for (int j = i + 1; j < data.length; j++) {
-      if (data[i]['properties']['name'] == data[j]['properties']['name']) {
-        if (data[i]['properties']['actualized'] >
-            data[j]['properties']['actualized']) {
-          data.removeAt(j);
-        } else {
-          data.removeAt(i);
-        }
-      }
-    }
-  }
-  ;
+  // remove duplicate names and only keep the one with biggest timestamp TODO
+
   return data;
 }
 
