@@ -21,13 +21,13 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {},
             child: Container(
                 decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
                   gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: <Color>[
                         Color.fromARGB(255, 28, 169, 212),
-                        Color.fromARGB(255, 139, 204, 242),
+                        Color.fromARGB(255, 14, 211, 211),
                       ]),
                 ),
                 child: Padding(
@@ -52,28 +52,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           )
                         ],
                       ),
-                      Container(
-                        height: 10,
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(20)),
-                          gradient: const LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: <Color>[
-                                Color.fromARGB(255, 255, 255, 255),
-                                Color.fromARGB(255, 255, 255, 255),
-                              ]),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.8),
-                              spreadRadius: 5,
-                              blurRadius: 7,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                      ),
                       const Padding(padding: EdgeInsets.only(top: 10)),
                       Row(
                         children: [
@@ -93,6 +71,32 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           Text(
                             teplota.toString() + "m",
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      const Padding(padding: EdgeInsets.only(top: 10)),
+                      Row(
+                        children: [
+                          const Padding(padding: EdgeInsets.all(20)),
+                          const Icon(
+                            Icons.forest_outlined,
+                            color: Colors.black,
+                            size: 25,
+                          ),
+                          const Padding(padding: EdgeInsets.all(10)),
+                          const Text(
+                            "Kvalita ovzduší  ",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                            ),
+                          ),
+                          Text(
+                            teplota.toString() + "℃",
                             style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 20,
@@ -165,13 +169,13 @@ class _HomeScreenState extends State<HomeScreen> {
             },
             child: Container(
                 decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
                   gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: <Color>[
                         Color.fromARGB(255, 28, 169, 212),
-                        Color.fromARGB(255, 139, 204, 242),
+                        Color.fromARGB(255, 28, 169, 212),
                       ]),
                 ),
                 child: const Padding(
@@ -181,7 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Padding(padding: EdgeInsets.only(left: 30)),
                       Icon(
-                        Icons.air,
+                        Icons.forest_outlined,
                         size: 40,
                         color: Colors.black,
                       ),
@@ -205,13 +209,13 @@ class _HomeScreenState extends State<HomeScreen> {
             },
             child: Container(
                 decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
                   gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: <Color>[
                         Color.fromARGB(255, 28, 169, 212),
-                        Color.fromARGB(255, 139, 204, 242),
+                        Color.fromARGB(255, 28, 169, 212),
                       ]),
                 ),
                 child: const Padding(
@@ -245,13 +249,13 @@ class _HomeScreenState extends State<HomeScreen> {
             },
             child: Container(
                 decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
                   gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: <Color>[
                         Color.fromARGB(255, 28, 169, 212),
-                        Color.fromARGB(255, 139, 204, 242),
+                        Color.fromARGB(255, 28, 169, 212),
                       ]),
                 ),
                 child: const Padding(
@@ -280,13 +284,13 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {},
             child: Container(
                 decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
                   gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: <Color>[
                         Color.fromARGB(255, 28, 169, 212),
-                        Color.fromARGB(255, 139, 204, 242),
+                        Color.fromARGB(255, 28, 169, 212),
                       ]),
                 ),
                 child: const Padding(

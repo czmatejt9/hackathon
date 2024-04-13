@@ -14,9 +14,9 @@ class BottomBar extends StatefulWidget {
 class _BottomBarState extends State<BottomBar> {
   int _selectedScreenIndex = 0;
   final List _screens = [
-    {"screen": HomeScreen(), "title": "Home Screen"},
-    {"screen": MyfutureBuilder(), "title": "Map Screen"},
-    {"screen": ProfilScreen(), "title": "Profil Screen"},
+    {"screen": HomeScreen(), "title": "Domovská obrazovka"},
+    {"screen": MyfutureBuilder(), "title": "Mapa"},
+    {"screen": ProfilScreen(), "title": "Podrobné informace"},
   ];
 
   void _selectScreen(int index) {
@@ -29,7 +29,13 @@ class _BottomBarState extends State<BottomBar> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_screens[_selectedScreenIndex]["title"]),
+        title: Text(
+          _screens[_selectedScreenIndex]["title"],
+          style: const TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -37,7 +43,7 @@ class _BottomBarState extends State<BottomBar> {
                 end: Alignment.bottomCenter,
                 colors: <Color>[
                   Color.fromARGB(255, 28, 169, 212),
-                  Color.fromARGB(255, 139, 204, 242),
+                  Color.fromARGB(255, 14, 211, 211),
                 ]),
           ),
         ),
@@ -54,10 +60,9 @@ class _BottomBarState extends State<BottomBar> {
         currentIndex: _selectedScreenIndex,
         onTap: _selectScreen,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home Screen'),
-          BottomNavigationBarItem(icon: Icon(Icons.map), label: "Map Screen"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.person), label: "Profil Screen"),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
+          BottomNavigationBarItem(icon: Icon(Icons.map), label: ""),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: ""),
         ],
       ),
     );
