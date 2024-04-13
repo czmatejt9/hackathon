@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+message PushSensorState {
+  string device_id = 1;
+  string sensor_id = 2;
+  string sensor_type = 3;
+  string state = 4;
+}
+
+message PushDeviceState {
+  string device_id = 1;
+  string field = 2;
+  string state = 3;
+}
