@@ -13,7 +13,7 @@ def home():
   data2 = cursor.fetchone()
   db.close()
   data = {
-      [{
+     "sensors": [{
     'did': data[1],
     'sid': data[2],
     'type': data[3],
