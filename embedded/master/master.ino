@@ -37,23 +37,26 @@ uint8_t buf[8128];
 
 void loop() 
 {
-    int size = udp.parsePacket();
-    if ( size == 0 )
+    int siz = udp.parsePacket();
+    if ( siz == 0 )
         return;
-    if (udp.available() < 1) {
-      return;
-    }
     
     udp.read(buf, 8128);
+    udp.flush();
     if (buf[0] == 0 && buf[1] == 0) {
       return;
     }
 
-    udp.flush();
+    int len = 0;
+    for (int i = 0; i < 8128; i++) {
+      if (buf[i] == 0) {
+        len = i;
+        break;
+      }
+    }
 
     PushSensorState ns = PushSensorState_init_zero;
-        
-    pb_istream_t stream = pb_istream_from_buffer(buf, 43);
+    pb_istream_t stream = pb_istream_from_buffer(buf, len);
     
     bool stat = pb_decode(&stream, PushSensorState_fields, &ns);
     

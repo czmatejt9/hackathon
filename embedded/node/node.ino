@@ -93,6 +93,7 @@ void setup(void)
 }
 
 uint8_t buf[8128];
+char statebuf[1024];
 
 void loop(void)
 {
@@ -122,16 +123,16 @@ void loop(void)
       float h = dht.readHumidity();
       float t = dht.readTemperature();
 
-      char htstate[1024];
-      sprintf(htstate, "H%f|T%f", h, t);
+      sprintf(statebuf, "H%f|T%f", h, t);
 
       PushSensorState ns = PushSensorState_init_zero;
 
-      strcpy(ns.device_id, "1234");
-      strcpy(ns.sensor_id, "5678");
+      strcpy(ns.device_id, "2345");
+      strcpy(ns.sensor_id, "6789");
       strcpy(ns.sensor_type, "DHT-11");
-      strcpy(ns.state, htstate);
+      strcpy(ns.state, statebuf);
 
+       memset(buf, 0, sizeof(buf));
       pb_ostream_t stream = pb_ostream_from_buffer(buf, sizeof(buf));
       pb_encode(&stream, PushSensorState_fields, &ns);
 
@@ -150,7 +151,36 @@ void loop(void)
         ESP.restart();
       }
       else{
-            Serial.println("Pushed sensor state!"); 
+            Serial.println("Pushed DHT sensor state!"); 
+      }
+
+      sprintf(statebuf, "M%d", analogRead(36));
+
+      strcpy(ns.device_id, "2345");
+      strcpy(ns.sensor_id, "7890");
+      strcpy(ns.sensor_type, "MIC");
+      strcpy(ns.state, statebuf);
+
+      memset(buf, 0, sizeof(buf));
+      stream = pb_ostream_from_buffer(buf, sizeof(buf));
+      pb_encode(&stream, PushSensorState_fields, &ns);
+
+      udp.beginPacket({192,168,4,255}, 8888);
+      printf("Length of buffer is %d/n", sizeof(buf));
+      printf("Written: %d\n", stream.bytes_written);
+      udp.write(buf, 8128);
+      for(int i = 0; i < 16; i++) {
+        Serial.print(buf[i]);
+      }
+      Serial.println();
+
+      if ( !udp.endPacket() ){
+        Serial.println("Failed to push sensor state!");
+        delay(100);
+        ESP.restart();
+      }
+      else{
+            Serial.println("Pushed MIC sensor state!"); 
       }
     }
 }
