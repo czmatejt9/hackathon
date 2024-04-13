@@ -74,6 +74,16 @@ Future<List<dynamic>> getData() async {
     print(error);
     return Future(() => null);
   });
+  await dio
+      .get(
+          'https://services6.arcgis.com/fUWVlHWZNxUvTUh8/arcgis/rest/services/Denní_průměry___Daily_averages/FeatureServer/0/query?time=${now - 3 * 3600000}%2C+$now&outFields=pm10%2C+pm2_5%2C+no_%2C+no2%2C+nox%2C+o3%2C+so2%2C+co%2C+rychlostvetru%2C+vlhkost%2C+teplota%2C+x%2C+y%2C+lokalita&f=pgeojson')
+      .then((response) {
+    print(response.data['features']);
+    data += response.data['features'];
+  }).catchError((error) {
+    print(error);
+    return Future(() => null);
+  });
   return data;
 }
 
