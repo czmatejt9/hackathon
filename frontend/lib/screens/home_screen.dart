@@ -156,60 +156,45 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 )),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const VlhkostScreen()),
+              );
+            },
             child: Container(
-              height: MediaQuery.of(context).size.height * 0.11,
-              width: MediaQuery.of(context).size.width,
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(20)),
-                gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: <Color>[
-                      Color.fromARGB(255, 28, 169, 212),
-                      Color.fromARGB(255, 139, 204, 242),
-                    ]),
-              ),
-              child: ShaderMask(
-                shaderCallback: (Rect bounds) {
-                  return const LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: <Color>[
-                      Colors.white,
-                      Colors.transparent,
-                      Colors.transparent,
-                      Colors.white,
-                    ],
-                    stops: <double>[0.02, 0.1, 0.9, 0.98],
-                  ).createShader(bounds);
-                },
-                blendMode: BlendMode.dstOut,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: 25 + 2,
-                  itemBuilder: (context, index) {
-                    if (index == 0 || index == 25 + 1) {
-                      return const SizedBox(width: 20);
-                    } else {
-                      return const Padding(
-                        padding: EdgeInsets.all(4),
-                        child: CircleAvatar(
-                          radius: 26,
-                          backgroundColor: Color.fromARGB(255, 255, 255, 255),
-                          child: CircleAvatar(
-                            radius: 25,
-                            backgroundColor: Color(0xffd9d9d9),
-                            child: Text("" /*(index - 1).toString()*/),
-                          ),
-                        ),
-                      );
-                    }
-                  },
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: <Color>[
+                        Color.fromARGB(255, 28, 169, 212),
+                        Color.fromARGB(255, 139, 204, 242),
+                      ]),
                 ),
-              ),
-            ),
+                child: const Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(padding: EdgeInsets.only(left: 30)),
+                      Icon(
+                        Icons.air,
+                        size: 40,
+                        color: Colors.black,
+                      ),
+                      Text(
+                        "    Kvalita ovzduší",
+                        style: TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                      )
+                    ],
+                  ),
+                )),
           ),
           TextButton(
             onPressed: () {
