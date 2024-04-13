@@ -13,7 +13,7 @@ class _BottomBarState extends State<BottomBar> {
   int _selectedScreenIndex = 0;
   final List _screens = [
     {"screen": HomeScreen(), "title": "Home Screen"},
-    {"screen": MapScreen(), "title": "Map Screen"},
+    {"screen": MyfutureBuilder(), "title": "Map Screen"},
     {"screen": ProfilScreen(), "title": "Profil Screen"},
   ];
 

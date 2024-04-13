@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -5,13 +7,17 @@ import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:dio/dio.dart';
 
 class MapScreen extends StatefulWidget {
-  const MapScreen({super.key});
+  var data;
+
+  MapScreen({super.key, required this.data});
 
   @override
   State<MapScreen> createState() => _MapScreenState();
 }
 
 class _MapScreenState extends State<MapScreen> {
+  var data;
+
   @override
   Widget build(BuildContext context) {
     return FlutterMap(
@@ -29,6 +35,18 @@ class _MapScreenState extends State<MapScreen> {
         openStreetMapTileLayer,
         CurrentLocationLayer(),
         MarkerLayer(markers: [
+          for (var point in [])
+            Marker(
+              width: 40.0,
+              height: 40.0,
+              point: LatLng(point['geometry']['coordinates'][1],
+                  point['geometry']['coordinates'][0]),
+              child: const Icon(
+                Icons.location_on,
+                size: 40.0,
+                color: Colors.red,
+              ),
+            ),
           Marker(
             width: 40.0,
             height: 40.0,
@@ -52,14 +70,37 @@ TileLayer get openStreetMapTileLayer {
   );
 }
 
-List<Map<String, Map>> getData() {
-  List<Map<String, Map>> data = [];
+Future<List<dynamic>> getData() async {
+  // get time in milliseconds
+  final int now = DateTime.now().millisecondsSinceEpoch;
   Dio dio = Dio();
-  dio
+  dynamic data;
+  await dio
       .get(
           'https://gis.brno.cz/ags1/rest/services/Hosted/chmi/FeatureServer/0/query?time=1706927960000%2C+1706942360000&geometry=%7Bxmin%3A+16.551400%2C+ymin%3A+49.217700%2C+xmax%3A+16.666800%2C+ymax%3A+49.146500%7D&outFields=name%2C+co_8h%2C+o3_1h%2C+no2_1h%2C+so2_1h%2C+pm10_1h%2C+pm2_5_1h%2C+pm10_24h&returnGeometry=true&f=geojson')
       .then((response) {
-    data = response.data;
+    print(response.data['features']);
+    data = response.data['features'];
+  }).catchError((error) {
+    print(error);
+    return [];
   });
   return data;
+}
+
+class MyfutureBuilder extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<dynamic>>(
+      future: getData(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          print(snapshot.data);
+          return MapScreen(data: snapshot.data!);
+        } else {
+          return MapScreen(data: const []);
+        }
+      },
+    );
+  }
 }
