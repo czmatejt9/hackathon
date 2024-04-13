@@ -2,21 +2,20 @@ import flask
 import sqlite3
 
 app = flask.Flask(__name__)
-db = sqlite3.connect('data.db')
-cursor = db.cursor()
-
-def get_data(did, sid):
-  global cursor
+def get_data(did, sid, cursor):
   cursor.execute('SELECT * FROM data WHERE did = ? AND sid = ? ORDER BY id DESC LIMIT 1', (did, sid))
   data = cursor.fetchone()
   return data
 
 @app.route('/')
 def home():
+  db = sqlite3.connect('data.db')
+  cursor = db.cursor()
   data_all = []
-  data_all.append(get_data('1234', '5678'))
-  data_all.append(get_data('2345', '6789'))
-  data_all.append(get_data('2345', '7890'))
+  data_all.append(get_data('1234', '5678', cursor))
+  data_all.append(get_data('2345', '6789', cursor))
+  data_all.append(get_data('2345', '7890', cursor))
+  db.close()
   data = {
      "sensors": []
   }
