@@ -4,7 +4,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final data;
+  const HomeScreen({super.key, required this.data});
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -17,6 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
       color: Color.fromARGB(158, 255, 255, 255),
       child: ListView(
         children: [
+          Text(widget.data.toString()),
           TextButton(
             onPressed: () {},
             child: Container(

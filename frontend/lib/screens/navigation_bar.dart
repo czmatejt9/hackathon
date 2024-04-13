@@ -4,9 +4,11 @@ import 'package:TODO/screens/home_screen.dart';
 import 'package:TODO/screens/map_screen.dart';
 import 'package:TODO/screens/profil_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
 
 class BottomBar extends StatefulWidget {
-  const BottomBar({super.key});
+  final data;
+  const BottomBar({super.key, required this.data});
   @override
   State<BottomBar> createState() => _BottomBarState();
 }
@@ -14,8 +16,8 @@ class BottomBar extends StatefulWidget {
 class _BottomBarState extends State<BottomBar> {
   int _selectedScreenIndex = 0;
   final List _screens = [
-    {"screen": HomeScreen(), "title": "Domovská obrazovka"},
-    {"screen": MyfutureBuilder(), "title": "Mapa"},
+    {"screen": HomeScreen(data: []), "title": "Domovská obrazovka"},
+    {"screen": MapScreen(data: []), "title": "Mapa"},
     {"screen": ProfilScreen(), "title": "Podrobné informace"},
   ];
 
@@ -50,8 +52,8 @@ class _BottomBarState extends State<BottomBar> {
       ),
       body: IndexedStack(
         children: <Widget>[
-          HomeScreen(),
-          MyfutureBuilder(),
+          HomeScreen(data: widget.data),
+          MapScreen(data: widget.data),
           ProfilScreen(),
         ],
         index: _selectedScreenIndex,
@@ -67,4 +69,56 @@ class _BottomBarState extends State<BottomBar> {
       ),
     );
   }
+}
+
+class MyfutureBuilder extends StatelessWidget {
+  MyfutureBuilder({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<dynamic>>(
+      future: getData(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return BottomBar(data: snapshot.data!);
+        } else {
+          return const CircularProgressIndicator();
+        }
+      },
+    );
+  }
+}
+
+Future<List<dynamic>> getData() async {
+  // get time in milliseconds
+  final int now = DateTime.now().millisecondsSinceEpoch;
+  Dio dio = Dio();
+  dynamic data;
+  await dio
+      .get(
+          'https://gis.brno.cz/ags1/rest/services/Hosted/chmi/FeatureServer/0/query?time=${now - 2 * 3660000}%2C+$now&outFields=name%2C+co_8h%2C+o3_1h%2C+no2_1h%2C+so2_1h%2C+pm10_1h%2C+pm2_5_1h%2C+pm10_24h%2C+actualized&returnGeometry=true&f=geojson')
+      .then((response) {
+    data = response.data['features'];
+  }).catchError((error) {
+    print(error);
+    return Future(() => null);
+  });
+  // remove duplicate names and only keep the one with biggest timestamp TODO
+  List new_data = [];
+  for (int i = 0; i < data.length; i++) {
+    bool found = false;
+    for (int j = 0; j < new_data.length; j++) {
+      if (data[i]['properties']['name'] == new_data[j]['properties']['name']) {
+        if (data[i]['properties']['actualized'] >
+            new_data[j]['properties']['actualized']) {
+          new_data[j] = data[i];
+        }
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      new_data.add(data[i]);
+    }
+  }
+  return new_data;
 }
