@@ -1,5 +1,3 @@
-import 'package:TODO/screens/home_screen.dart';
-import 'package:TODO/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'screens/navigation_bar.dart';
@@ -19,6 +17,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
+      debugShowCheckedModeBanner: false,
       home: BottomBar(),
     );
   }

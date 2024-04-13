@@ -1,3 +1,5 @@
+import 'package:TODO/screens/teplota_sceen.dart';
+import 'package:TODO/screens/vlhkost_screen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
@@ -12,20 +14,21 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Color.fromARGB(158, 255, 255, 255),
-      child: ListView(
+      color: Color.fromARGB(118, 184, 184, 184),
+      child: Column(
         children: [
+          Padding(padding: EdgeInsets.only(top: 10)),
           TextButton(
             onPressed: () {},
             child: Container(
                 decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
                   gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: <Color>[
                         Color.fromARGB(255, 28, 169, 212),
-                        Color.fromARGB(255, 139, 204, 242),
+                        Color.fromARGB(255, 14, 211, 211),
                       ]),
                 ),
                 child: Padding(
@@ -50,28 +53,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           )
                         ],
                       ),
-                      Container(
-                        height: 10,
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(20)),
-                          gradient: const LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: <Color>[
-                                Color.fromARGB(255, 255, 255, 255),
-                                Color.fromARGB(255, 255, 255, 255),
-                              ]),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.8),
-                              spreadRadius: 5,
-                              blurRadius: 7,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                      ),
                       const Padding(padding: EdgeInsets.only(top: 10)),
                       Row(
                         children: [
@@ -91,6 +72,32 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           Text(
                             teplota.toString() + "m",
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      const Padding(padding: EdgeInsets.only(top: 10)),
+                      Row(
+                        children: [
+                          const Padding(padding: EdgeInsets.all(20)),
+                          const Icon(
+                            Icons.forest_outlined,
+                            color: Colors.black,
+                            size: 25,
+                          ),
+                          const Padding(padding: EdgeInsets.all(10)),
+                          const Text(
+                            "Kvalita ovzduší  ",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                            ),
+                          ),
+                          Text(
+                            teplota.toString() + "℃",
                             style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 20,
@@ -154,72 +161,62 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 )),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.11,
-              width: MediaQuery.of(context).size.width,
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(20)),
-                gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: <Color>[
-                      Color.fromARGB(255, 28, 169, 212),
-                      Color.fromARGB(255, 139, 204, 242),
-                    ]),
-              ),
-              child: ShaderMask(
-                shaderCallback: (Rect bounds) {
-                  return const LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: <Color>[
-                      Colors.white,
-                      Colors.transparent,
-                      Colors.transparent,
-                      Colors.white,
-                    ],
-                    stops: <double>[0.02, 0.1, 0.9, 0.98],
-                  ).createShader(bounds);
-                },
-                blendMode: BlendMode.dstOut,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: 25 + 2,
-                  itemBuilder: (context, index) {
-                    if (index == 0 || index == 25 + 1) {
-                      return const SizedBox(width: 20);
-                    } else {
-                      return const Padding(
-                        padding: EdgeInsets.all(4),
-                        child: CircleAvatar(
-                          radius: 26,
-                          backgroundColor: Color.fromARGB(255, 255, 255, 255),
-                          child: CircleAvatar(
-                            radius: 25,
-                            backgroundColor: Color(0xffd9d9d9),
-                            child: Text("" /*(index - 1).toString()*/),
-                          ),
-                        ),
-                      );
-                    }
-                  },
-                ),
-              ),
-            ),
-          ),
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const VlhkostScreen()),
+              );
+            },
             child: Container(
                 decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
                   gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: <Color>[
                         Color.fromARGB(255, 28, 169, 212),
-                        Color.fromARGB(255, 139, 204, 242),
+                        Color.fromARGB(255, 28, 169, 212),
+                      ]),
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(padding: EdgeInsets.only(left: 30)),
+                      Icon(
+                        Icons.forest_outlined,
+                        size: 40,
+                        color: Colors.black,
+                      ),
+                      Text(
+                        "    Kvalita ovzduší",
+                        style: TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                      )
+                    ],
+                  ),
+                )),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const VlhkostScreen()),
+              );
+            },
+            child: Container(
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: <Color>[
+                        Color.fromARGB(255, 28, 169, 212),
+                        Color.fromARGB(255, 28, 169, 212),
                       ]),
                 ),
                 child: const Padding(
@@ -245,16 +242,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 )),
           ),
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const TeplotaScreen()),
+              );
+            },
             child: Container(
                 decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
                   gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: <Color>[
                         Color.fromARGB(255, 28, 169, 212),
-                        Color.fromARGB(255, 139, 204, 242),
+                        Color.fromARGB(255, 28, 169, 212),
                       ]),
                 ),
                 child: const Padding(
@@ -283,13 +285,13 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {},
             child: Container(
                 decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
                   gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: <Color>[
                         Color.fromARGB(255, 28, 169, 212),
-                        Color.fromARGB(255, 139, 204, 242),
+                        Color.fromARGB(255, 28, 169, 212),
                       ]),
                 ),
                 child: const Padding(

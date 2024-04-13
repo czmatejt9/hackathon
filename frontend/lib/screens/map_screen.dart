@@ -5,6 +5,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:dio/dio.dart';
+import 'package:TODO/air_quality_calculation.dart';
 
 class MapScreen extends StatefulWidget {
   final data;
@@ -37,16 +38,38 @@ class _MapScreenState extends State<MapScreen> {
           for (var point in widget.data)
             Marker(
               width: 40.0,
-              height: 40.0,
+              height: 60.0,
               point: LatLng(point['geometry']['coordinates'][1],
                   point['geometry']['coordinates'][0]),
-              child: const Icon(
-                Icons.location_on,
-                size: 40.0,
-                color: Colors.red,
+              child: // show icon with number of the aqi
+                  Column(
+                children: [
+                  Icon(
+                    Icons.location_on,
+                    color: Colors.red,
+                  ),
+                  Text(
+                    AirQuality.calculation(
+                            AirQuality.parseValue(
+                                point['properties']['so2_1h']),
+                            AirQuality.parseValue(point['properties']['co_8h']),
+                            AirQuality.parseValue(point['properties']['o3_1h']),
+                            AirQuality.parseValue(
+                                point['properties']['pm10_24h']),
+                            AirQuality.parseValue(
+                                point['properties']['pm2_5_1h']),
+                            AirQuality.parseValue(
+                                point['properties']['no2_1h']))
+                        .toString(),
+                    style: const TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
-            ),
-        ])
+            )
+        ]),
       ],
     );
   }
@@ -66,15 +89,33 @@ Future<List<dynamic>> getData() async {
   dynamic data;
   await dio
       .get(
-          'https://gis.brno.cz/ags1/rest/services/Hosted/chmi/FeatureServer/0/query?time=${now - 3 * 3600000}%2C+$now&outFields=name%2C+co_8h%2C+o3_1h%2C+no2_1h%2C+so2_1h%2C+pm10_1h%2C+pm2_5_1h%2C+pm10_24h%2C+actualized&returnGeometry=true&f=geojson')
+          'https://gis.brno.cz/ags1/rest/services/Hosted/chmi/FeatureServer/0/query?time=${now - 2 * 3660000}%2C+$now&outFields=name%2C+co_8h%2C+o3_1h%2C+no2_1h%2C+so2_1h%2C+pm10_1h%2C+pm2_5_1h%2C+pm10_24h%2C+actualized&returnGeometry=true&f=geojson')
       .then((response) {
-    print(response.data['features']);
     data = response.data['features'];
   }).catchError((error) {
     print(error);
     return Future(() => null);
   });
-  return data;
+  // remove duplicate names and only keep the one with biggest timestamp TODO
+  List new_data = [];
+  for (int i = 0; i < data.length; i++) {
+    bool found = false;
+    for (int j = 0; j < new_data.length; j++) {
+      if (data[i]['properties']['name'] == new_data[j]['properties']['name']) {
+        if (data[i]['properties']['actualized'] >
+            new_data[j]['properties']['actualized']) {
+          new_data[j] = data[i];
+        }
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      new_data.add(data[i]);
+    }
+  }
+  print(new_data);
+  return new_data;
 }
 
 class MyfutureBuilder extends StatelessWidget {
