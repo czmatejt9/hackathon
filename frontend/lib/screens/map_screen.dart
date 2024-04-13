@@ -91,15 +91,31 @@ Future<List<dynamic>> getData() async {
       .get(
           'https://gis.brno.cz/ags1/rest/services/Hosted/chmi/FeatureServer/0/query?time=${now - 2 * 3660000}%2C+$now&outFields=name%2C+co_8h%2C+o3_1h%2C+no2_1h%2C+so2_1h%2C+pm10_1h%2C+pm2_5_1h%2C+pm10_24h%2C+actualized&returnGeometry=true&f=geojson')
       .then((response) {
-    print(response.data['features']);
     data = response.data['features'];
   }).catchError((error) {
     print(error);
     return Future(() => null);
   });
   // remove duplicate names and only keep the one with biggest timestamp TODO
-
-  return data;
+  List new_data = [];
+  for (int i = 0; i < data.length; i++) {
+    bool found = false;
+    for (int j = 0; j < new_data.length; j++) {
+      if (data[i]['properties']['name'] == new_data[j]['properties']['name']) {
+        if (data[i]['properties']['actualized'] >
+            new_data[j]['properties']['actualized']) {
+          new_data[j] = data[i];
+        }
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      new_data.add(data[i]);
+    }
+  }
+  print(new_data);
+  return new_data;
 }
 
 class MyfutureBuilder extends StatelessWidget {
