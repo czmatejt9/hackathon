@@ -1,5 +1,6 @@
 import serial
 import sqlite3
+import json
 
 ser = serial.Serial(
   port='/dev/ttyUSB0',
@@ -21,10 +22,11 @@ db.close()
 while True:
   line = ser.readline()
   line = line.decode('utf-8').strip()  # Added strip() to remove trailing newline
+  line = json.loads(line)
   if line:  # Only print if line is not empty
     db = sqlite3.connect('data.db')
     cursor = db.cursor()
-    cursor.execute('''INSERT INTO data (did, sid, type, value, time) VALUES (?, ?, ?, ?, datetime('now'))''', line['did'], line['sid'], line['t'], line['state'])
+    cursor.execute('''INSERT INTO data (did, sid, type, value, time) VALUES (?, ?, ?, ?, datetime('now'))''', (line['did'], line['sid'], line['t'], line['state']))
     db.commit()
     db.close()
     print(f"{count}: {line}")
