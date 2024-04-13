@@ -66,7 +66,7 @@ Future<List<dynamic>> getData() async {
   dynamic data;
   await dio
       .get(
-          'https://gis.brno.cz/ags1/rest/services/Hosted/chmi/FeatureServer/0/query?time=1706927960000%2C+1706942360000&geometry=%7Bxmin%3A+16.551400%2C+ymin%3A+49.217700%2C+xmax%3A+16.666800%2C+ymax%3A+49.146500%7D&outFields=name%2C+co_8h%2C+o3_1h%2C+no2_1h%2C+so2_1h%2C+pm10_1h%2C+pm2_5_1h%2C+pm10_24h&returnGeometry=true&f=geojson')
+          'https://gis.brno.cz/ags1/rest/services/Hosted/chmi/FeatureServer/0/query?time=${now - 3600000}%2C+$now&outFields=name%2C+co_8h%2C+o3_1h%2C+no2_1h%2C+so2_1h%2C+pm10_1h%2C+pm2_5_1h%2C+pm10_24h&returnGeometry=true&f=geojson')
       .then((response) {
     print(response.data['features']);
     data = response.data['features'];
