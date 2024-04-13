@@ -1,3 +1,4 @@
+import 'package:TODO/screens/teplota_sceen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
@@ -210,7 +211,12 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const TeplotaScreen()),
+              );
+            },
             child: Container(
                 decoration: const BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(20)),
