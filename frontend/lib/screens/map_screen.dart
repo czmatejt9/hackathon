@@ -17,8 +17,21 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
+  List points = [];
+  List aqiValues = [];
   @override
   Widget build(BuildContext context) {
+    for (var point in widget.data) {
+      points.add(LatLng(point['geometry']['coordinates'][1],
+          point['geometry']['coordinates'][0]));
+      aqiValues.add(AirQuality.calculation(
+          AirQuality.parseValue(point['properties']['so2_1h']),
+          AirQuality.parseValue(point['properties']['co_8h']),
+          AirQuality.parseValue(point['properties']['o3_1h']),
+          AirQuality.parseValue(point['properties']['pm10_24h']),
+          AirQuality.parseValue(point['properties']['pm2_5_1h']),
+          AirQuality.parseValue(point['properties']['no2_1h'])));
+    }
     return FlutterMap(
       options: const MapOptions(
         initialCenter: LatLng(
@@ -26,8 +39,9 @@ class _MapScreenState extends State<MapScreen> {
           49.195,
           16.6085,
         ),
-        initialZoom: 13.0,
+        initialZoom: 11.5,
         maxZoom: 20.0,
+        minZoom: 10.0,
         interactionOptions: InteractionOptions(
             flags: InteractiveFlag.all & ~InteractiveFlag.rotate),
       ),
@@ -35,38 +49,55 @@ class _MapScreenState extends State<MapScreen> {
         openStreetMapTileLayer,
         CurrentLocationLayer(),
         MarkerLayer(markers: [
-          for (var point in widget.data)
+          for (int i = 0; i < points.length; i++)
             Marker(
-              width: 40.0,
-              height: 60.0,
-              point: LatLng(point['geometry']['coordinates'][1],
-                  point['geometry']['coordinates'][0]),
-              child: // show icon with number of the aqi
-                  Column(
-                children: [
-                  Icon(
-                    Icons.location_on,
-                    color: Colors.red,
-                  ),
-                  Text(
-                    AirQuality.calculation(
-                            AirQuality.parseValue(
-                                point['properties']['so2_1h']),
-                            AirQuality.parseValue(point['properties']['co_8h']),
-                            AirQuality.parseValue(point['properties']['o3_1h']),
-                            AirQuality.parseValue(
-                                point['properties']['pm10_24h']),
-                            AirQuality.parseValue(
-                                point['properties']['pm2_5_1h']),
-                            AirQuality.parseValue(
-                                point['properties']['no2_1h']))
-                        .toString(),
-                    style: const TextStyle(
-                      color: Colors.red,
-                      fontWeight: FontWeight.bold,
+              width: 33.0,
+              height: 33.0,
+              point: LatLng(points[i].latitude, points[i].longitude),
+              child: // show icon circle with number in the middle
+                  GestureDetector(
+                onTap: () {
+                  // show dialog with aqi value
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Air Quality Index'),
+                        content: Text('AQI: ${aqiValues[i]}'),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Close'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                child: Container(
+                    decoration: BoxDecoration(
+                      color: aqiValues[i] < 50
+                          ? Colors.green
+                          : aqiValues[i] < 100
+                              ? Colors.yellow
+                              : aqiValues[i] < 150
+                                  ? Colors.orange
+                                  : aqiValues[i] < 200
+                                      ? Colors.red
+                                      : Colors.purple,
+                      shape: BoxShape.circle,
                     ),
-                  ),
-                ],
+                    child: Center(
+                      child: Text(
+                        aqiValues[i].toString(),
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    )),
               ),
             )
         ]),

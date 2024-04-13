@@ -16,7 +16,7 @@ class _BottomBarState extends State<BottomBar> {
   final List _screens = [
     {"screen": HomeScreen(data: []), "title": "Domovská obrazovka"},
     {"screen": MapScreen(data: []), "title": "Mapa"},
-    {"screen": ProfilScreen(), "title": "Podrobné informace"},
+    {"screen": ProfilScreen(data: []), "title": "Podrobné informace"},
   ];
 
   void _selectScreen(int index) {
@@ -52,7 +52,7 @@ class _BottomBarState extends State<BottomBar> {
         children: <Widget>[
           HomeScreen(data: widget.data),
           MapScreen(data: widget.data),
-          ProfilScreen(),
+          ProfilScreen(data: widget.data),
         ],
         index: _selectedScreenIndex,
       ),
