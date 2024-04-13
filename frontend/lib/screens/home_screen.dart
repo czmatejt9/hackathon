@@ -14,9 +14,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Color.fromARGB(158, 255, 255, 255),
-      child: ListView(
+      color: Color.fromARGB(118, 184, 184, 184),
+      child: Column(
         children: [
+          Padding(padding: EdgeInsets.only(top: 10)),
           TextButton(
             onPressed: () {},
             child: Container(

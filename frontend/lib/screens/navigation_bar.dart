@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:TODO/screens/home_screen.dart';
 import 'package:TODO/screens/map_screen.dart';
 import 'package:TODO/screens/profil_screen.dart';
@@ -57,12 +55,29 @@ class _BottomBarState extends State<BottomBar> {
         index: _selectedScreenIndex,
       ),
       bottomNavigationBar: BottomNavigationBar(
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
         currentIndex: _selectedScreenIndex,
         onTap: _selectScreen,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.map), label: ""),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: ""),
+          BottomNavigationBarItem(
+              icon: Icon(
+                Icons.home,
+                color: Colors.green,
+              ),
+              label: ''),
+          BottomNavigationBarItem(
+              icon: Icon(
+                Icons.map,
+                color: Colors.green,
+              ),
+              label: ""),
+          BottomNavigationBarItem(
+              icon: Icon(
+                Icons.person,
+                color: Colors.green,
+              ),
+              label: ""),
         ],
       ),
     );
