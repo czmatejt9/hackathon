@@ -18,7 +18,6 @@ class _HomeScreenState extends State<HomeScreen> {
       color: Color.fromARGB(118, 184, 184, 184),
       child: Column(
         children: [
-          Text(widget.data.toString()),
           Padding(padding: EdgeInsets.only(top: 10)),
           TextButton(
             onPressed: () {},
