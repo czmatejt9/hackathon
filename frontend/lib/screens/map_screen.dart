@@ -16,8 +16,6 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  var data;
-
   @override
   Widget build(BuildContext context) {
     return FlutterMap(
@@ -28,6 +26,7 @@ class _MapScreenState extends State<MapScreen> {
           16.6085,
         ),
         initialZoom: 13.0,
+        maxZoom: 20.0,
         interactionOptions: InteractionOptions(
             flags: InteractiveFlag.all & ~InteractiveFlag.rotate),
       ),
@@ -35,7 +34,7 @@ class _MapScreenState extends State<MapScreen> {
         openStreetMapTileLayer,
         CurrentLocationLayer(),
         MarkerLayer(markers: [
-          for (var point in [])
+          for (var point in widget.data)
             Marker(
               width: 40.0,
               height: 40.0,
@@ -47,16 +46,6 @@ class _MapScreenState extends State<MapScreen> {
                 color: Colors.red,
               ),
             ),
-          Marker(
-            width: 40.0,
-            height: 40.0,
-            point: LatLng(49.195, 16.6085),
-            child: const Icon(
-              Icons.location_on,
-              size: 40.0,
-              color: Colors.red,
-            ),
-          ),
         ])
       ],
     );
