@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pie_chart/pie_chart.dart';
 
 class VlhkostScreen extends StatefulWidget {
   const VlhkostScreen({super.key});
@@ -7,28 +8,93 @@ class VlhkostScreen extends StatefulWidget {
 }
 
 class _VlhkostScreenState extends State<VlhkostScreen> {
-  List<String> seznam = [
-    'Prvek 1',
-    'Prvek 2',
-    'Prvek 3',
-    'Prvek 4',
-    'Prvek 5',
-    'Prvek 6',
-    'Prvek 7',
-    'Prvek 8',
-    'Prvek 9',
-    'Prvek 10',
-    'Prvek 1',
-    'Prvek 2',
-    'Prvek 3',
-    'Prvek 4',
-    'Prvek 5',
-    'Prvek 6',
-    'Prvek 7',
-    'Prvek 8',
-    'Prvek 9',
-    'Prvek 10',
-  ];
+  int vlhkost_vzduchu = 70;
+  Map<String, double> dataMap = {"ok": 40};
+
+  @override
+  void initState() {
+    super.initState();
+    print(vlhkost_vzduchu);
+    if (vlhkost_vzduchu <= 10) {
+      setState(() {
+        dataMap = {
+          " 0%-10% Velmi špatná": vlhkost_vzduchu.toDouble(),
+        };
+      });
+    }
+    if (vlhkost_vzduchu <= 25 && vlhkost_vzduchu > 10) {
+      setState(() {
+        dataMap = {
+          " 0%-10% Velmi špatná": 10,
+          "10%-25% Špatná": vlhkost_vzduchu.toDouble(),
+        };
+      });
+    }
+    if (vlhkost_vzduchu <= 40 && vlhkost_vzduchu > 25) {
+      setState(() {
+        dataMap = {
+          " 0%-10% Velmi špatná": 10,
+          "10%-25% Špatná": 25,
+          "25%-40% Střední": vlhkost_vzduchu.toDouble(),
+        };
+      });
+    }
+    if (vlhkost_vzduchu <= 50 && vlhkost_vzduchu > 40) {
+      setState(() {
+        dataMap = {
+          " 0%-10% Velmi špatná": 10,
+          "10%-25% Špatná": 25,
+          "25%-40% Střední": 40,
+          "40%-50% Dobrá": vlhkost_vzduchu.toDouble(),
+        };
+      });
+    }
+    if (vlhkost_vzduchu <= 65 && vlhkost_vzduchu > 50) {
+      setState(() {
+        dataMap = {
+          " 0%-10% Velmi špatná": 10,
+          "10%-25% Špatná": 25,
+          "25%-40% Střední": 40,
+          "40%-50% Dobrá": 50,
+          "50%-65% Vynikající": vlhkost_vzduchu.toDouble(),
+        };
+      });
+    }
+    if (vlhkost_vzduchu <= 75 && vlhkost_vzduchu > 65) {
+      setState(() {
+        dataMap = {
+          "100%-95% Velmi špatná": 10,
+          "95%-85% Špatná": 25,
+          "85%-75% Střední": 40,
+          "75%-65% Dobrá": vlhkost_vzduchu.toDouble(),
+        };
+      });
+    }
+    if (vlhkost_vzduchu <= 85 && vlhkost_vzduchu > 75) {
+      setState(() {
+        dataMap = {
+          "100%-95% Velmi špatná": 10,
+          "95%-85% Špatná": 25,
+          "85%-75% Střední": vlhkost_vzduchu.toDouble(),
+        };
+      });
+    }
+    if (vlhkost_vzduchu <= 95 && vlhkost_vzduchu > 85) {
+      setState(() {
+        dataMap = {
+          "100%-95% Velmi špatná": 10,
+          "95%-85% Špatná": vlhkost_vzduchu.toDouble(),
+        };
+      });
+    }
+    if (vlhkost_vzduchu <= 100 && vlhkost_vzduchu > 95) {
+      setState(() {
+        dataMap = {
+          "100%-95% Velmi špatná": vlhkost_vzduchu.toDouble(),
+        };
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,20 +139,58 @@ class _VlhkostScreenState extends State<VlhkostScreen> {
                           fontWeight: FontWeight.w600, color: Colors.white),
                     ))),
           ),
-          Container(
-            height: MediaQuery.of(context).size.height * 0.6,
-            child: ListView.builder(
-              itemCount: seznam.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(
-                    'Prvek číslo ${seznam[index]}',
-                    style: TextStyle(color: Colors.black),
-                    textAlign: TextAlign.center,
+          Padding(
+            padding: const EdgeInsets.all(15),
+            child: Container(
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: <Color>[
+                        Color.fromARGB(255, 28, 169, 212),
+                        Color.fromARGB(255, 139, 204, 242),
+                      ]),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: PieChart(
+                    dataMap: dataMap,
+                    animationDuration: const Duration(milliseconds: 800),
+                    chartLegendSpacing: 32,
+                    chartRadius: MediaQuery.of(context).size.width / 3.2,
+                    colorList: const [
+                      Colors.red,
+                      Colors.orange,
+                      Colors.green,
+                      Colors.blue,
+                      Colors.purple
+                    ],
+                    initialAngleInDegree: 0,
+                    chartType: ChartType.ring,
+                    ringStrokeWidth: 32,
+                    baseChartColor:
+                        const Color.fromARGB(255, 0, 0, 0)!.withOpacity(0.15),
+                    centerText: vlhkost_vzduchu.toString() + "%",
+                    legendOptions: const LegendOptions(
+                      showLegendsInRow: false,
+                      legendPosition: LegendPosition.right,
+                      showLegends: true,
+                      legendShape: BoxShape.circle,
+                      legendTextStyle: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    chartValuesOptions: const ChartValuesOptions(
+                      showChartValueBackground: false,
+                      showChartValues: false,
+                      showChartValuesInPercentage: true,
+                      showChartValuesOutside: true,
+                      decimalPlaces: 0,
+                    ),
+                    totalValue: 200,
                   ),
-                );
-              },
-            ),
+                )),
           ),
         ],
       ),
