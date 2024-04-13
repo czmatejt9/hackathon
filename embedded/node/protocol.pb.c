@@ -6,7 +6,7 @@
 #error Regenerate this file with the current version of nanopb generator.
 #endif
 
-PB_BIND(PushSensorState, PushSensorState, 2)
+PB_BIND(PushSensorState, PushSensorState, AUTO)
 
 
 PB_BIND(PushDeviceState, PushDeviceState, AUTO)

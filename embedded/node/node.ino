@@ -1,124 +1,160 @@
 #include <Arduino.h>
+#include <esp_now.h>
 #include <WiFi.h>
-#include <WiFiUdp.h>
 #include <esp_wifi.h>
 #include "DHT.h"
-
 #include "pb_encode.h"
+#include "pb_decode.h"
 #include "protocol.pb.h"
 
 #define DHTPIN 4     // Digital pin connected to the DHT sensor
-// Feather HUZZAH ESP8266 note: use pins 3, 4, 5, 12, 13 or 14 --
-// Pin 15 can work but DHT must be disconnected during program upload.
-
-// Uncomment whatever type you're using!
 #define DHTTYPE DHT11   // DHT 11
-//#define DHTTYPE DHT22   // DHT 22  (AM2302), AM2321
-//#define DHTTYPE DHT21   // DHT 21 (AM2301)
 
-// Connect pin 1 (on the left) of the sensor to +5V
-// NOTE: If using a board with 3.3V logic like an Arduino Due connect pin 1
-// to 3.3V instead of 5V!
-// Connect pin 2 of the sensor to whatever your DHTPIN is
-// Connect pin 4 (on the right) of the sensor to GROUND
-// Connect a 10K resistor from pin 2 (data) to pin 1 (power) of the sensor
-
-// Initialize DHT sensor.
-// Note that older versions of this library took an optional third parameter to
-// tweak the timings for faster processors.  This parameter is no longer needed
-// as the current DHT reading algorithm adjusts itself to work on faster procs.
 DHT dht(DHTPIN, DHTTYPE);
 
-const char* ssid = "kkkkk";//AP ssid
-const char* password = "12345678";//AP password
+#define MAX_MESSAGE_IDS 50
+#define MAX_MESSAGE_ID_LENGTH 20 // Adjust the length as needed
 
-WiFiUDP udp;
+char* generateMessageIdFromDeviceId(const char* deviceId, uint64_t messageNumber) {
+    static char messageId[MAX_MESSAGE_ID_LENGTH];
 
-const char *toStr( wl_status_t status ) {
-    switch( status ) {
-    case WL_NO_SHIELD: return "No shield";
-    case WL_IDLE_STATUS: return "Idle status";
-    case WL_NO_SSID_AVAIL: return "No SSID avail";
-    case WL_SCAN_COMPLETED: return "Scan compleded";
-    case WL_CONNECTED: return "Connected";
-    case WL_CONNECT_FAILED: return "Failed";
-    case WL_CONNECTION_LOST: return "Connection lost";
-    case WL_DISCONNECTED: return "Disconnected";
-    }
-    return "Unknown";
+    // Generate the message ID using the device ID and message number
+    snprintf(messageId, sizeof(messageId), "%s_%llu", deviceId, messageNumber);
+
+    return messageId;
 }
 
-void setup(void)
-{
-  Serial.begin( 115200 );
-    Serial.println( "Slave" );
-    pinMode(5, OUTPUT);//bultin Led, for debug
+char messageIdPrefix[] = "1234_"; // Prefix for the message ID
+uint64_t messageIdCounter = 0; // Counter to auto-increment the message ID
 
-    //We start STA mode with LR protocol
-    //This ssid is not visible whith our regular devices
-    WiFi.mode( WIFI_STA );//for STA mode
-    //if mode LR config OK
-    int a= esp_wifi_set_protocol( WIFI_IF_STA, WIFI_PROTOCOL_LR );
-    if (a==0)
-    {
-      Serial.println(" ");
-      Serial.print("Error = ");
-      Serial.print(a);
-      Serial.println(" , Mode LR OK!");
-    }
-    else//if some error in LR config
-    {
-      Serial.println(" ");
-      Serial.print("Error = ");
-      Serial.print(a);
-      Serial.println(" , Error in Mode LR!");
-    }
-      
-    WiFi.begin(ssid, password);//this ssid is not visible
+char* generateMessageId() {
+    static char messageId[MAX_MESSAGE_ID_LENGTH];
 
-    //Wifi connection, we connect to master
-    while (WiFi.status() != WL_CONNECTED) 
-    {
-      delay(500);
-      Serial.print(".");
-    }
+    // Copy the prefix to the message ID
+    strcpy(messageId, messageIdPrefix);
 
-    Serial.println("WiFi connected");
-    Serial.print("IP address: ");
-    Serial.println(WiFi.localIP());
-  
-    udp.begin( 8888 );
-    dht.begin();
-  
+    // Convert the counter to a string and append it to the message ID
+    char counterStr[20]; // Assuming 20 characters are enough to store a 64-bit integer
+    snprintf(counterStr, sizeof(counterStr), "%llu", messageIdCounter);
+    strcat(messageId, counterStr);
+
+    // Increment the counter for the next message ID
+    messageIdCounter++;
+
+    return messageId;
 }
 
-uint8_t buf[8128];
-char statebuf[1024];
+char messageIds[MAX_MESSAGE_IDS][MAX_MESSAGE_ID_LENGTH + 1]; // +1 for null terminator
+int currentIndex = 0; // Index to keep track of the current position in the rolling buffer
 
-void loop(void)
-{
-  if ( WiFi.status() != WL_CONNECTED ) 
-    {
-        Serial.println( "|" );
-        int tries = 0;
-        WiFi.begin( ssid, password );
-        while( WiFi.status() != WL_CONNECTED ) {
-            tries++;
-            if ( tries == 5 )
-                return;
-            Serial.println( toStr( WiFi.status() ) );
-            delay( 1000 );
+void addMessageId(const char* messageId) {
+    // Copy the new message ID to the current position in the rolling buffer
+    strncpy(messageIds[currentIndex], messageId, MAX_MESSAGE_ID_LENGTH);
+    messageIds[currentIndex][MAX_MESSAGE_ID_LENGTH] = '\0'; // Ensure null termination
+
+    // Update the current index for the next message
+    currentIndex = (currentIndex + 1) % MAX_MESSAGE_IDS; // Wrap around if reached the end
+}
+
+bool hasId(const char* messageId) {
+    // Iterate through the rolling buffer to check if the message ID exists
+    for (int i = 0; i < MAX_MESSAGE_IDS; i++) {
+        if (strcmp(messageIds[i], messageId) == 0) {
+            return true; // Message ID found
         }
-        Serial.print( "Connected " );
-        Serial.println( WiFi.localIP() );
     }
-    /*
-    //if connection OK, execute command 'b' from master
-    int size = udp.parsePacket();
-  if (size > 0) {
-    int str = udp.read();
-    */
+    return false; // Message ID not found
+}
 
+void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
+    if (status == ESP_NOW_SEND_SUCCESS) {
+        Serial.println("Message sent successfully");
+    } else {
+        Serial.println("Error sending message");
+    }
+}
+
+void OnDataRecv(const uint8_t *mac_addr, const uint8_t *data, int data_len) {
+    if (data_len == 0 || data[0] == 0) {
+        return; // Ignore empty or invalid messages
+    }
+
+    int len = 0;
+    for (int i = 0; i < data_len; i++) {
+      if (data[i] == 0) {
+        len = i;
+        break;
+      }
+    }
+
+    // Decode received message
+    PushSensorState ns = PushSensorState_init_zero;
+    pb_istream_t stream = pb_istream_from_buffer(data, len);
+    if (!pb_decode(&stream, PushSensorState_fields, &ns)) {
+        Serial.println("Decoding failed");
+        return;
+    }
+
+    if (hasId(generateMessageIdFromDeviceId(ns.device_id, ns.messageid))) {
+      return;
+    }
+
+    addMessageId(generateMessageIdFromDeviceId(ns.device_id, ns.messageid));
+
+    uint8_t mac[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}; // Broadcast address
+    esp_err_t result = esp_now_send(mac, data, data_len);
+    if (result != ESP_OK) {
+        Serial.println("Error sending message");
+    }
+
+    digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+    delay(75);
+    digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+}
+
+void setup() {
+    Serial.begin(115200);
+    pinMode(LED_BUILTIN, OUTPUT);
+    //pinMode(36, INPUT);
+    
+    // Initialize WiFi in STA mode with LR protocol
+    WiFi.mode(WIFI_STA);
+    esp_wifi_set_protocol(WIFI_IF_STA, WIFI_PROTOCOL_LR);
+    
+    // Initialize ESP-NOW
+    if (esp_now_init() != ESP_OK) {
+        Serial.println("ESP-NOW initialization failed");
+        ESP.restart();
+    }
+
+    for (int i = 0; i < MAX_MESSAGE_IDS; i++) {
+        messageIds[i][0] = '\0'; // Null terminate each string
+    }
+    
+    // Register callback for sending data
+    esp_now_register_send_cb(OnDataSent);
+    esp_now_register_recv_cb(OnDataRecv);
+    
+    // Add broadcast peer (all zeros)
+    uint8_t broadcastAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+    esp_now_peer_info_t peerInfo = {};
+    memcpy(peerInfo.peer_addr, broadcastAddress, 6);
+    peerInfo.channel = 0;  // Use default channel
+    peerInfo.encrypt = false; // No encryption for broadcast
+    if (esp_now_add_peer(&peerInfo) != ESP_OK) {
+        Serial.println("Failed to add broadcast peer");
+        ESP.restart();
+    }
+    
+    // Initialize DHT sensor
+    dht.begin();
+}
+
+uint8_t buf[PushSensorState_size];
+char statebuf[128];
+
+void loop()
+{
     if (millis() % 2000 == 0) {
       float h = dht.readHumidity();
       float t = dht.readTemperature();
@@ -127,60 +163,46 @@ void loop(void)
 
       PushSensorState ns = PushSensorState_init_zero;
 
-      strcpy(ns.device_id, "2345");
-      strcpy(ns.sensor_id, "6789");
+      strcpy(ns.device_id, "1234");
+      strcpy(ns.sensor_id, "5678");
       strcpy(ns.sensor_type, "DHT-11");
       strcpy(ns.state, statebuf);
+      ns.messageid = messageIdCounter;
+
+      uint8_t mac[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}; // Broadcast address
 
        memset(buf, 0, sizeof(buf));
       pb_ostream_t stream = pb_ostream_from_buffer(buf, sizeof(buf));
       pb_encode(&stream, PushSensorState_fields, &ns);
 
-      udp.beginPacket({192,168,4,255}, 8888);
-      printf("Length of buffer is %d/n", sizeof(buf));
-      printf("Written: %d\n", stream.bytes_written);
-      udp.write(buf, 8128);
-      for(int i = 0; i < 16; i++) {
-        Serial.print(buf[i]);
+      esp_err_t result = esp_now_send(mac, buf, sizeof(buf));
+      if (result != ESP_OK) {
+          Serial.println("Error sending message");
+      } else {
+        addMessageId(generateMessageId());
       }
-      Serial.println();
-
-      if ( !udp.endPacket() ){
-        Serial.println("Failed to push sensor state!");
-        delay(100);
-        ESP.restart();
-      }
-      else{
-            Serial.println("Pushed DHT sensor state!"); 
-      }
-
+/*
       sprintf(statebuf, "M%d", analogRead(36));
 
       strcpy(ns.device_id, "2345");
       strcpy(ns.sensor_id, "7890");
       strcpy(ns.sensor_type, "MIC");
       strcpy(ns.state, statebuf);
+      ns.messageid = messageIdCounter;
 
       memset(buf, 0, sizeof(buf));
       stream = pb_ostream_from_buffer(buf, sizeof(buf));
       pb_encode(&stream, PushSensorState_fields, &ns);
 
-      udp.beginPacket({192,168,4,255}, 8888);
-      printf("Length of buffer is %d/n", sizeof(buf));
-      printf("Written: %d\n", stream.bytes_written);
-      udp.write(buf, 8128);
-      for(int i = 0; i < 16; i++) {
-        Serial.print(buf[i]);
+      result = esp_now_send(mac, buf, sizeof(buf));
+      if (result != ESP_OK) {
+          Serial.println("Error sending message");
+      } else {
+        addMessageId(generateMessageId());
       }
-      Serial.println();
-
-      if ( !udp.endPacket() ){
-        Serial.println("Failed to push sensor state!");
-        delay(100);
-        ESP.restart();
-      }
-      else{
-            Serial.println("Pushed MIC sensor state!"); 
-      }
+*/
+      digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+      delay(75);
+      digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
     }
 }

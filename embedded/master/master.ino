@@ -4,71 +4,64 @@
 // master.ino
 
 #include <Arduino.h>
+#include <esp_now.h>
 #include <WiFi.h>
-#include <WiFiUdp.h>
 #include <esp_wifi.h>
 
 #include "pb_decode.h"
 #include "protocol.pb.h"
 
-const char* ssid = "kkkkk";//AP ssid
-const char* password = "12345678";//AP password
-WiFiUDP udp;
-
-void setup() {
-    pinMode(LED_BUILTIN, OUTPUT);//builtin Led, for debug
-    digitalWrite(LED_BUILTIN, HIGH);
-    Serial.begin( 115200 );
-  
-    //second, we start AP mode with LR protocol
-    //This AP ssid is not visible whith our regular devices
-    WiFi.mode( WIFI_AP );//for AP mode
-    //here config LR mode
-    int a= esp_wifi_set_protocol( WIFI_IF_AP, WIFI_PROTOCOL_LR );
-    WiFi.softAP(ssid, password);
-    delay( 1000 );
-    digitalWrite(LED_BUILTIN, LOW); 
-    udp.begin( 8888 );
-}
-
-int count = 0;
-
-uint8_t buf[8128];
-
-void loop() 
-{
-    int siz = udp.parsePacket();
-    if ( siz == 0 )
-        return;
-    
-    udp.read(buf, 8128);
-    udp.flush();
-    if (buf[0] == 0 && buf[1] == 0) {
-      return;
+void OnDataRecv(const uint8_t *mac_addr, const uint8_t *data, int data_len) {
+    if (data_len == 0 || data[0] == 0) {
+        return; // Ignore empty or invalid messages
     }
 
     int len = 0;
-    for (int i = 0; i < 8128; i++) {
-      if (buf[i] == 0) {
+    for (int i = 0; i < data_len; i++) {
+      if (data[i] == 0) {
         len = i;
         break;
       }
     }
 
+    // Decode received message
     PushSensorState ns = PushSensorState_init_zero;
-    pb_istream_t stream = pb_istream_from_buffer(buf, len);
-    
-    bool stat = pb_decode(&stream, PushSensorState_fields, &ns);
-    
-    /* Check for errors... */
-    if (!stat)
-    {
-        printf("Decoding failed: %s\n", PB_GET_ERROR(&stream));
+    pb_istream_t stream = pb_istream_from_buffer(data, len);
+    if (!pb_decode(&stream, PushSensorState_fields, &ns)) {
+        Serial.println("Decoding failed");
         return;
     }
-    
-    /* Print the data contained in the message. */
+
+    // Print the decoded message
     printf("{\"did\": \"%s\", \"sid\": \"%s\", \"t\": \"%s\", \"state\": \"%s\"}\n", ns.device_id, ns.sensor_id, ns.sensor_type, ns.state);
+}
+
+void setup() {
+    Serial.begin( 115200 );
     
-    digitalWrite(5, !digitalRead(5));//toggle Led
+    WiFi.mode( WIFI_STA );
+    esp_wifi_set_protocol( WIFI_IF_AP, WIFI_PROTOCOL_LR );
+
+    if (esp_now_init() != ESP_OK) {
+        Serial.println("ESP-NOW initialization failed");
+        ESP.restart();
+    }
+
+    esp_now_register_recv_cb(OnDataRecv);
+    
+    // Add broadcast peer (all zeros)
+    uint8_t broadcastAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+    esp_now_peer_info_t peerInfo = {};
+    memcpy(peerInfo.peer_addr, broadcastAddress, 6);
+    peerInfo.channel = 0;  // Use default channel
+    peerInfo.encrypt = false; // No encryption for broadcast
+    if (esp_now_add_peer(&peerInfo) != ESP_OK) {
+        Serial.println("Failed to add broadcast peer");
+        ESP.restart();
+    }
+}
+
+void loop() 
+{
+    
 }
