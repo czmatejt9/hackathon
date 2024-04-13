@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
+
   @override
   State<MapScreen> createState() => _MapScreenState();
 }
@@ -9,18 +12,21 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        padding: const EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          color: Colors.blue,
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        child: const Text(
-          'Smurfova mapa',
-          style: TextStyle(fontSize: 24.0, color: Colors.white),
-        ),
+    return FlutterMap(
+      options: const MapOptions(
+        initialCenter: LatLng(49.2, 16.6),
+        initialZoom: 11.0,
+        interactionOptions: InteractionOptions(
+            flags: InteractiveFlag.all & ~InteractiveFlag.rotate),
       ),
+      children: [openStreetMapTileLayer],
     );
   }
+}
+
+TileLayer get openStreetMapTileLayer {
+  return TileLayer(
+    urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    userAgentPackageName: 'flutter_map',
+  );
 }
