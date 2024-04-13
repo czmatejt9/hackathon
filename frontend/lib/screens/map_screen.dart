@@ -7,7 +7,7 @@ import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:dio/dio.dart';
 
 class MapScreen extends StatefulWidget {
-  var data;
+  final data;
 
   MapScreen({super.key, required this.data});
 

@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -11,7 +12,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.grey[800],
+      color: Color.fromARGB(158, 255, 255, 255),
       child: ListView(
         children: [
           TextButton(
@@ -224,14 +225,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: const Padding(
                   padding: EdgeInsets.all(10),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
+                      Padding(padding: EdgeInsets.only(left: 30)),
                       Icon(
                         Icons.air,
                         size: 40,
+                        color: Colors.black,
                       ),
                       Text(
-                        "Kvalita ovzduší",
+                        "    Vlhkost vzduchu",
                         style: TextStyle(
                             fontSize: 25,
                             fontWeight: FontWeight.bold,
@@ -240,7 +243,77 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 )),
-          )
+          ),
+          TextButton(
+            onPressed: () {},
+            child: Container(
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: <Color>[
+                        Color.fromARGB(255, 28, 169, 212),
+                        Color.fromARGB(255, 139, 204, 242),
+                      ]),
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(padding: EdgeInsets.only(left: 30)),
+                      Icon(
+                        Icons.thermostat_outlined,
+                        size: 40,
+                        color: Colors.black,
+                      ),
+                      Text(
+                        "    Teplota",
+                        style: TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                      )
+                    ],
+                  ),
+                )),
+          ),
+          TextButton(
+            onPressed: () {},
+            child: Container(
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: <Color>[
+                        Color.fromARGB(255, 28, 169, 212),
+                        Color.fromARGB(255, 139, 204, 242),
+                      ]),
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(padding: EdgeInsets.only(left: 30)),
+                      Icon(
+                        Icons.location_on_outlined,
+                        size: 40,
+                        color: Colors.black,
+                      ),
+                      Text(
+                        "    Senzory",
+                        style: TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                      )
+                    ],
+                  ),
+                )),
+          ),
         ],
       ),
     );
