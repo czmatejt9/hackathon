@@ -66,7 +66,7 @@ Future<List<dynamic>> getData() async {
   dynamic data;
   await dio
       .get(
-          'https://gis.brno.cz/ags1/rest/services/Hosted/chmi/FeatureServer/0/query?time=${now - 3600000}%2C+$now&outFields=name%2C+co_8h%2C+o3_1h%2C+no2_1h%2C+so2_1h%2C+pm10_1h%2C+pm2_5_1h%2C+pm10_24h%2C+actualized&returnGeometry=true&f=geojson')
+          'https://gis.brno.cz/ags1/rest/services/Hosted/chmi/FeatureServer/0/query?time=${now - 3 * 3600000}%2C+$now&outFields=name%2C+co_8h%2C+o3_1h%2C+no2_1h%2C+so2_1h%2C+pm10_1h%2C+pm2_5_1h%2C+pm10_24h%2C+actualized&returnGeometry=true&f=geojson')
       .then((response) {
     print(response.data['features']);
     data = response.data['features'];
@@ -84,7 +84,6 @@ class MyfutureBuilder extends StatelessWidget {
       future: getData(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          print(snapshot.data);
           return MapScreen(data: snapshot.data!);
         } else {
           return MapScreen(data: const []);
