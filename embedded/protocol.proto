@@ -5,6 +5,7 @@ message PushSensorState {
   string sensor_id = 2;
   string sensor_type = 3;
   string state = 4;
+  int64 messageid = 5;
 }
 
 message PushDeviceState {

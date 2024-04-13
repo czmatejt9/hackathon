@@ -11,10 +11,11 @@
 
 /* Struct definitions */
 typedef struct _PushSensorState {
-    char device_id[1024];
-    char sensor_id[1024];
-    char sensor_type[1024];
-    char state[1024];
+    char device_id[32];
+    char sensor_id[32];
+    char sensor_type[32];
+    char state[128];
+    int64_t messageid;
 } PushSensorState;
 
 typedef struct _PushDeviceState {
@@ -29,9 +30,9 @@ extern "C" {
 #endif
 
 /* Initializer values for message structs */
-#define PushSensorState_init_default             {"", "", "", ""}
+#define PushSensorState_init_default             {"", "", "", "", 0}
 #define PushDeviceState_init_default             {{{NULL}, NULL}, {{NULL}, NULL}, {{NULL}, NULL}}
-#define PushSensorState_init_zero                {"", "", "", ""}
+#define PushSensorState_init_zero                {"", "", "", "", 0}
 #define PushDeviceState_init_zero                {{{NULL}, NULL}, {{NULL}, NULL}, {{NULL}, NULL}}
 
 /* Field tags (for use in manual encoding/decoding) */
@@ -39,6 +40,7 @@ extern "C" {
 #define PushSensorState_sensor_id_tag            2
 #define PushSensorState_sensor_type_tag          3
 #define PushSensorState_state_tag                4
+#define PushSensorState_messageid_tag            5
 #define PushDeviceState_device_id_tag            1
 #define PushDeviceState_field_tag                2
 #define PushDeviceState_state_tag                3
@@ -48,7 +50,8 @@ extern "C" {
 X(a, STATIC,   SINGULAR, STRING,   device_id,         1) \
 X(a, STATIC,   SINGULAR, STRING,   sensor_id,         2) \
 X(a, STATIC,   SINGULAR, STRING,   sensor_type,       3) \
-X(a, STATIC,   SINGULAR, STRING,   state,             4)
+X(a, STATIC,   SINGULAR, STRING,   state,             4) \
+X(a, STATIC,   SINGULAR, INT64,    messageid,         5)
 #define PushSensorState_CALLBACK NULL
 #define PushSensorState_DEFAULT NULL
 
@@ -69,7 +72,7 @@ extern const pb_msgdesc_t PushDeviceState_msg;
 /* Maximum encoded size of messages (where known) */
 /* PushDeviceState_size depends on runtime parameters */
 #define PROTOCOL_PB_H_MAX_SIZE                   PushSensorState_size
-#define PushSensorState_size                     4104
+#define PushSensorState_size                     240
 
 #ifdef __cplusplus
 } /* extern "C" */

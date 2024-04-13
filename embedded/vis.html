@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>JSON Data Display</title>
+    <style>
+      #data {
+        white-space: pre;  /* Make whitespace significant */
+      }
+    </style>
+    <script>
+      function fetchData() {
+        fetch('http://10.182.36.176:5000')
+          .then(response => response.json())
+          .then(data => {
+            document.getElementById('data').textContent = JSON.stringify(data, null, 2);
+          })
+          .catch(error => console.error('Error:', error));
+      }
+
+      // Fetch data every 5 seconds
+      setInterval(fetchData, 5000);
+    </script>
+  </head>
+  <body onload="fetchData()">
+    <pre id="data"></pre>
+  </body>
+</html>
