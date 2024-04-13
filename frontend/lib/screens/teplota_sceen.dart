@@ -11,7 +11,7 @@ class _TeplotaScreenState extends State<TeplotaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Vlhkost vzduchu"),
+        title: Text("Teplota okolí"),
       ),
       body: ListView(
         children: [
