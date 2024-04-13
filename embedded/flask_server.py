@@ -10,7 +10,7 @@ def home():
   cursor.execute('SELECT * FROM data ORDER BY id DESC LIMIT 1')
   data = cursor.fetchone()
   db.close()
-  return data
+  return (flask.jsonify(data), 200)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
