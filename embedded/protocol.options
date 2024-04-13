@@ -1,0 +1,4 @@
+PushSensorState.device_id max_size:1024
+PushSensorState.sensor_id max_size:1024
+PushSensorState.sensor_type max_size:1024
+PushSensorState.state max_size:1024
