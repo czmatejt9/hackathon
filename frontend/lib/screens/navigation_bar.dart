@@ -42,7 +42,14 @@ class _BottomBarState extends State<BottomBar> {
           ),
         ),
       ),
-      body: _screens[_selectedScreenIndex]["screen"],
+      body: IndexedStack(
+        children: <Widget>[
+          HomeScreen(),
+          MyfutureBuilder(),
+          ProfilScreen(),
+        ],
+        index: _selectedScreenIndex,
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedScreenIndex,
         onTap: _selectScreen,
