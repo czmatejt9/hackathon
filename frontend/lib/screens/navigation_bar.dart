@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:TODO/screens/home_screen.dart';
 import 'package:TODO/screens/map_screen.dart';
 import 'package:TODO/screens/profil_screen.dart';
@@ -13,7 +15,7 @@ class _BottomBarState extends State<BottomBar> {
   int _selectedScreenIndex = 0;
   final List _screens = [
     {"screen": HomeScreen(), "title": "Home Screen"},
-    {"screen": MapScreen(), "title": "Map Screen"},
+    {"screen": MyfutureBuilder(), "title": "Map Screen"},
     {"screen": ProfilScreen(), "title": "Profil Screen"},
   ];
 
@@ -27,17 +29,33 @@ class _BottomBarState extends State<BottomBar> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text(_screens[_selectedScreenIndex]["title"]),
-          backgroundColor: const Color.fromRGBO(27, 146, 224, 100),
-          actions: const <Widget>[]),
-      body: _screens[_selectedScreenIndex]["screen"],
+        title: Text(_screens[_selectedScreenIndex]["title"]),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: <Color>[
+                  Color.fromARGB(255, 28, 169, 212),
+                  Color.fromARGB(255, 139, 204, 242),
+                ]),
+          ),
+        ),
+      ),
+      body: IndexedStack(
+        children: <Widget>[
+          HomeScreen(),
+          MyfutureBuilder(),
+          ProfilScreen(),
+        ],
+        index: _selectedScreenIndex,
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedScreenIndex,
         onTap: _selectScreen,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home Screen'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.settings), label: "Map Screen"),
+          BottomNavigationBarItem(icon: Icon(Icons.map), label: "Map Screen"),
           BottomNavigationBarItem(
               icon: Icon(Icons.person), label: "Profil Screen"),
         ],
