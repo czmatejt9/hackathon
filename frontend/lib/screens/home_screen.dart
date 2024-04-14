@@ -2,6 +2,35 @@ import 'package:TODO/screens/teplota_sceen.dart';
 import 'package:TODO/screens/vlhkost_screen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
+import 'package:geolocator/geolocator.dart';
+import 'dart:math';
+
+class Location {
+  final double latitude;
+  final double longitude;
+
+  Location(this.latitude, this.longitude);
+
+  double distanceTo(Location other) {
+    const double earthRadius = 6371; // Radius of the earth in km
+    double lat1Rad = _degreesToRadians(latitude);
+    double lat2Rad = _degreesToRadians(other.latitude);
+    double latDiff = _degreesToRadians(other.latitude - latitude);
+    double lonDiff = _degreesToRadians(other.longitude - longitude);
+
+    double a = sin(latDiff / 2) * sin(latDiff / 2) +
+        cos(lat1Rad) * cos(lat2Rad) * sin(lonDiff / 2) * sin(lonDiff / 2);
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    double distance = earthRadius * c; // Distance in km
+
+    return distance;
+  }
+
+  double _degreesToRadians(double degrees) {
+    return degrees * pi / 180;
+  }
+}
 
 class HomeScreen extends StatefulWidget {
   final data;
@@ -12,13 +41,73 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int teplota = 15;
+  late Position _currentPosition;
+
+  double degreesToRadians(double degrees) {
+    return degrees * pi / 180;
+  }
+
+  double distanceInKmBetweenEarthCoordinates(
+      double lat1, double lon1, double lat2, double lon2) {
+    const double earthRadiusKm = 6371;
+
+    double dLat = degreesToRadians(lat2 - lat1);
+    double dLon = degreesToRadians(lon2 - lon1);
+
+    lat1 = degreesToRadians(lat1);
+    lat2 = degreesToRadians(lat2);
+
+    double a = sin(dLat / 2) * sin(dLat / 2) +
+        sin(dLon / 2) * sin(dLon / 2) * cos(lat1) * cos(lat2);
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    return earthRadiusKm * c;
+  }
+
+  // Zadaná geolokace
+
+  Location findNearestLocation(
+      Location targetLocation, List<Location> locations) {
+    late Location nearestLocation;
+    double minDistance = double.infinity;
+
+    for (Location location in locations) {
+      double distance = distanceInKmBetweenEarthCoordinates(
+          targetLocation.latitude,
+          targetLocation.longitude,
+          location.latitude,
+          location.longitude);
+      print(distance.toString());
+      if (distance < minDistance) {
+        minDistance = distance;
+        nearestLocation = location;
+      }
+    }
+
+    return nearestLocation;
+  }
+
+  List<Location> extractLocations(String data) {
+    List<Location> locations = [];
+
+    RegExp regex = RegExp(r'\[(-?\d+\.\d+), (-?\d+\.\d+)\]');
+    Iterable<Match> matches = regex.allMatches(data);
+
+    for (Match match in matches) {
+      double latitude = double.parse(match.group(1) ?? "Sobek");
+      double longitude = double.parse(match.group(2) ?? "Sobíno");
+      locations.add(Location(latitude, longitude));
+    }
+
+    return locations;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       color: Color.fromARGB(118, 184, 184, 184),
       child: Column(
         children: [
-          Padding(padding: EdgeInsets.only(top: 10)),
+          const Padding(padding: EdgeInsets.only(top: 10)),
           TextButton(
             onPressed: () {},
             child: Container(
@@ -283,7 +372,34 @@ class _HomeScreenState extends State<HomeScreen> {
                 )),
           ),
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              Geolocator.getCurrentPosition(
+                      desiredAccuracy: LocationAccuracy.best,
+                      forceAndroidLocationManager: true)
+                  .then((Position position) {
+                setState(() {
+                  _currentPosition = position;
+                });
+              }).catchError((e) {
+                print(e);
+              });
+              Location targetLocation = Location(
+                  _currentPosition.latitude, _currentPosition.longitude);
+
+              Location nearestLocation = findNearestLocation(
+                  targetLocation, extractLocations(widget.data.toString()));
+              print(
+                  'Nejbližší lokace k zadané geolokaci: ${nearestLocation.latitude}, ${nearestLocation.longitude}');
+              print(_currentPosition);
+              print(nearestLocation.distanceTo(Location(
+                  _currentPosition.latitude, _currentPosition.longitude)));
+              print(distanceInKmBetweenEarthCoordinates(
+                  nearestLocation.latitude,
+                  nearestLocation.longitude,
+                  _currentPosition.latitude,
+                  _currentPosition.longitude));
+              print(extractLocations(widget.data.toString()));
+            },
             child: Container(
                 decoration: const BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -302,12 +418,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Padding(padding: EdgeInsets.only(left: 30)),
                       Icon(
-                        Icons.location_on_outlined,
+                        Icons.mic_none_outlined,
                         size: 40,
                         color: Colors.black,
                       ),
                       Text(
-                        "    Senzory",
+                        "    Hlučnost",
                         style: TextStyle(
                             fontSize: 25,
                             fontWeight: FontWeight.bold,
