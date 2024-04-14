@@ -62,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Location findNearestLocation(
       Location targetLocation, List<Location> locations) {
-    late Location nearestLocation;
+    Location nearestLocation = Location(49.6834, 16.3556);
     double minDistance = double.infinity;
 
     for (Location location in locations) {
@@ -70,23 +70,21 @@ class _HomeScreenState extends State<HomeScreen> {
           location.latitude, targetLocation.longitude, location.longitude);
       if (distance < minDistance) {
         minDistance = distance;
-        nearestLocation = location;
+        setState(() {
+          nearestLocation = location;
+        });
       }
     }
 
     return nearestLocation;
   }
 
-  List<Location> extractLocations(String data) {
+  List<Location> extractLocations(List<DataPoint> data) {
     List<Location> locations = [];
 
-    RegExp regex = RegExp(r'\[(-?\d+\.\d+), (-?\d+\.\d+)\]');
-    Iterable<Match> matches = regex.allMatches(data);
-
-    for (Match match in matches) {
-      double latitude = double.parse(match.group(1) ?? "Sobek");
-      double longitude = double.parse(match.group(2) ?? "Sobíno");
-      locations.add(Location(longitude, latitude));
+    for (DataPoint point in data) {
+      locations
+          .add(Location(point.position.latitude, point.position.longitude));
     }
 
     return locations;
@@ -114,8 +112,8 @@ class _HomeScreenState extends State<HomeScreen> {
     Location targetLocation =
         Location(_currentPosition.latitude, _currentPosition.longitude);
 
-    Location nearestLocation = findNearestLocation(
-        targetLocation, extractLocations(widget.data.toString()));
+    Location nearestLocation =
+        findNearestLocation(targetLocation, extractLocations(widget.data));
     return Container(
       color: const Color.fromARGB(118, 184, 184, 184),
       child: Column(
