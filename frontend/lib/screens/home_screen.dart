@@ -42,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Text(
                             "Aktuální poloha",
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                               fontWeight: FontWeight.bold,
                               fontSize: 30,
                             ),
@@ -67,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           const Text(
                             "Nebližší snímač  ",
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                               fontSize: 20,
                             ),
                           ),
@@ -93,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           const Text(
                             "Kvalita ovzduší  ",
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                               fontSize: 20,
                             ),
                           ),
@@ -119,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           const Text(
                             "Vlhkost vzduchu  ",
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                               fontSize: 20,
                             ),
                           ),
@@ -145,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           const Text(
                             "Teplota  ",
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                               fontSize: 20,
                             ),
                           ),
@@ -196,7 +196,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: TextStyle(
                             fontSize: 25,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white),
+                            color: Colors.black),
                       )
                     ],
                   ),
@@ -236,7 +236,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: TextStyle(
                             fontSize: 25,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white),
+                            color: Colors.black),
                       )
                     ],
                   ),
@@ -276,7 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: TextStyle(
                             fontSize: 25,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white),
+                            color: Colors.black),
                       )
                     ],
                   ),
@@ -311,7 +311,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: TextStyle(
                             fontSize: 25,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white),
+                            color: Colors.black),
                       )
                     ],
                   ),

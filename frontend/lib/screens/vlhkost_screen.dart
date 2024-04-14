@@ -8,8 +8,9 @@ class VlhkostScreen extends StatefulWidget {
 }
 
 class _VlhkostScreenState extends State<VlhkostScreen> {
-  int vlhkost_vzduchu = 70;
-  Map<String, double> dataMap = {"ok": 40};
+  int vlhkost_vzduchu = 75;
+  dynamic barva_grafu = Colors.black;
+  Map<String, double> dataMap = {"Sobek": 0};
 
   @override
   void initState() {
@@ -18,80 +19,73 @@ class _VlhkostScreenState extends State<VlhkostScreen> {
     if (vlhkost_vzduchu <= 10) {
       setState(() {
         dataMap = {
-          " 0%-10% Velmi špatná": vlhkost_vzduchu.toDouble(),
+          "Velmi špatná": vlhkost_vzduchu.toDouble(),
         };
+        barva_grafu = Colors.red;
       });
     }
     if (vlhkost_vzduchu <= 25 && vlhkost_vzduchu > 10) {
       setState(() {
         dataMap = {
-          " 0%-10% Velmi špatná": 10,
-          "10%-25% Špatná": vlhkost_vzduchu.toDouble(),
+          "Špatná": vlhkost_vzduchu.toDouble(),
         };
+        barva_grafu = const Color.fromARGB(255, 244, 174, 54);
       });
     }
     if (vlhkost_vzduchu <= 40 && vlhkost_vzduchu > 25) {
       setState(() {
         dataMap = {
-          " 0%-10% Velmi špatná": 10,
-          "10%-25% Špatná": 25,
-          "25%-40% Střední": vlhkost_vzduchu.toDouble(),
+          "Střední": vlhkost_vzduchu.toDouble(),
         };
+        barva_grafu = const Color.fromARGB(255, 193, 244, 54);
       });
     }
     if (vlhkost_vzduchu <= 50 && vlhkost_vzduchu > 40) {
       setState(() {
         dataMap = {
-          " 0%-10% Velmi špatná": 10,
-          "10%-25% Špatná": 25,
-          "25%-40% Střední": 40,
-          "40%-50% Dobrá": vlhkost_vzduchu.toDouble(),
+          "Dobrá": vlhkost_vzduchu.toDouble(),
         };
+        barva_grafu = const Color.fromARGB(255, 57, 244, 54);
       });
     }
     if (vlhkost_vzduchu <= 65 && vlhkost_vzduchu > 50) {
       setState(() {
         dataMap = {
-          " 0%-10% Velmi špatná": 10,
-          "10%-25% Špatná": 25,
-          "25%-40% Střední": 40,
-          "40%-50% Dobrá": 50,
-          "50%-65% Vynikající": vlhkost_vzduchu.toDouble(),
+          "Vynikající": vlhkost_vzduchu.toDouble(),
         };
+        barva_grafu = const Color.fromARGB(255, 54, 244, 216);
       });
     }
     if (vlhkost_vzduchu <= 75 && vlhkost_vzduchu > 65) {
       setState(() {
         dataMap = {
-          "100%-95% Velmi špatná": 10,
-          "95%-85% Špatná": 25,
-          "85%-75% Střední": 40,
-          "75%-65% Dobrá": vlhkost_vzduchu.toDouble(),
+          "Dobrá": (100 - vlhkost_vzduchu).toDouble(),
         };
+        barva_grafu = const Color.fromARGB(255, 57, 244, 54);
       });
     }
     if (vlhkost_vzduchu <= 85 && vlhkost_vzduchu > 75) {
       setState(() {
         dataMap = {
-          "100%-95% Velmi špatná": 10,
-          "95%-85% Špatná": 25,
-          "85%-75% Střední": vlhkost_vzduchu.toDouble(),
+          "Střední": (100 - vlhkost_vzduchu).toDouble(),
         };
+        barva_grafu = const Color.fromARGB(255, 193, 244, 54);
       });
     }
     if (vlhkost_vzduchu <= 95 && vlhkost_vzduchu > 85) {
       setState(() {
         dataMap = {
-          "100%-95% Velmi špatná": 10,
-          "95%-85% Špatná": vlhkost_vzduchu.toDouble(),
+          "Špatná": (100 - vlhkost_vzduchu).toDouble(),
         };
+        barva_grafu = const Color.fromARGB(255, 244, 174, 54);
       });
     }
     if (vlhkost_vzduchu <= 100 && vlhkost_vzduchu > 95) {
       setState(() {
         dataMap = {
-          "100%-95% Velmi špatná": vlhkost_vzduchu.toDouble(),
+          "Velmi špatná": (100 - vlhkost_vzduchu).toDouble(),
         };
+        barva_grafu = Colors.red;
       });
     }
   }
@@ -140,7 +134,7 @@ class _VlhkostScreenState extends State<VlhkostScreen> {
                           "Vlhkost vzduchu je míra vodních par ve vzduchu. Vysoká vlhkost může udržovat hydrataci kůže a sliznic, ale také podporuje růst plísní a roztočů, což může být škodlivé pro zdraví. Naopak nízká vlhkost snižuje riziko plísní, ale může způsobit podráždění dýchacích cest a kůže, a také statickou elektřinu. Optimalizace vlhkosti vzduchu je klíčová pro zajištění pohodlí a zdraví člověka.",
                           style: TextStyle(
                               fontWeight: FontWeight.w600,
-                              color: Colors.white,
+                              color: Colors.black,
                               fontSize: 15),
                         ))),
               ),
@@ -153,8 +147,8 @@ class _VlhkostScreenState extends State<VlhkostScreen> {
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: <Color>[
-                            Color.fromARGB(255, 28, 169, 212),
-                            Color.fromARGB(255, 28, 169, 212),
+                            Color.fromARGB(0, 28, 169, 212),
+                            Color.fromARGB(0, 28, 169, 212),
                           ]),
                     ),
                     child: Padding(
@@ -164,13 +158,7 @@ class _VlhkostScreenState extends State<VlhkostScreen> {
                         animationDuration: const Duration(milliseconds: 800),
                         chartLegendSpacing: 32,
                         chartRadius: MediaQuery.of(context).size.width / 3.2,
-                        colorList: const [
-                          Colors.red,
-                          Colors.orange,
-                          Colors.green,
-                          Colors.blue,
-                          Colors.purple
-                        ],
+                        colorList: [barva_grafu],
                         initialAngleInDegree: 0,
                         chartType: ChartType.ring,
                         ringStrokeWidth: 32,
@@ -193,7 +181,7 @@ class _VlhkostScreenState extends State<VlhkostScreen> {
                           showChartValuesOutside: true,
                           decimalPlaces: 0,
                         ),
-                        totalValue: 200,
+                        totalValue: 65,
                       ),
                     )),
               ),
