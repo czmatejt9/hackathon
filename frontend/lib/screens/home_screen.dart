@@ -1,4 +1,5 @@
 import 'package:TODO/air_quality_calculation.dart';
+import 'package:TODO/screens/hlucny_screen.dart';
 import 'package:TODO/screens/kvalita_screen.dart';
 import 'package:TODO/screens/teplota_sceen.dart';
 import 'package:TODO/screens/vlhkost_screen.dart';
@@ -44,7 +45,18 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int teplota = 15;
-  late Position _currentPosition;
+  int vlhkost = 53;
+  Position _currentPosition = Position(
+      accuracy: 0,
+      longitude: 0,
+      latitude: 0,
+      timestamp: DateTime(2024),
+      altitude: 0,
+      altitudeAccuracy: 0,
+      heading: 0,
+      headingAccuracy: 0,
+      speed: 0,
+      speedAccuracy: 0);
 
   // Zadaná geolokace
 
@@ -56,7 +68,6 @@ class _HomeScreenState extends State<HomeScreen> {
     for (Location location in locations) {
       double distance = Location.distance(targetLocation.latitude,
           location.latitude, targetLocation.longitude, location.longitude);
-      print(distance.toString());
       if (distance < minDistance) {
         minDistance = distance;
         nearestLocation = location;
@@ -90,6 +101,21 @@ class _HomeScreenState extends State<HomeScreen> {
         aqiValues.add(point.aqi);
       }
     }
+    Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.best,
+            forceAndroidLocationManager: true)
+        .then((Position position) {
+      setState(() {
+        _currentPosition = position;
+      });
+    }).catchError((e) {
+      print(e);
+    });
+    Location targetLocation =
+        Location(_currentPosition.latitude, _currentPosition.longitude);
+
+    Location nearestLocation = findNearestLocation(
+        targetLocation, extractLocations(widget.data.toString()));
     return Container(
       color: const Color.fromARGB(118, 184, 184, 184),
       child: Column(
@@ -148,7 +174,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           Text(
-                            teplota.toString() + "m",
+                            Location.distance(
+                                        nearestLocation.latitude,
+                                        _currentPosition.latitude,
+                                        nearestLocation.longitude,
+                                        _currentPosition.longitude)
+                                    .round()
+                                    .toString() +
+                                "m",
                             style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 20,
@@ -200,7 +233,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           Text(
-                            teplota.toString() + "℃",
+                            vlhkost.toString() + "%",
                             style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 20,
@@ -363,45 +396,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           TextButton(
             onPressed: () {
-              Geolocator.getCurrentPosition(
-                      desiredAccuracy: LocationAccuracy.best,
-                      forceAndroidLocationManager: true)
-                  .then((Position position) {
-                setState(() {
-                  _currentPosition = position;
-                });
-              }).catchError((e) {
-                print(e);
-              });
-              Location targetLocation = Location(
-                  _currentPosition.latitude, _currentPosition.longitude);
-
-              Location nearestLocation = findNearestLocation(
-                  targetLocation, extractLocations(widget.data.toString()));
-              print(
-                  'Nejbližší lokace k zadané geolokaci: ${nearestLocation.latitude}, ${nearestLocation.longitude}');
-              print(_currentPosition);
-              print("SOBEK");
-              print(nearestLocation.latitude.toString() +
-                  " " +
-                  nearestLocation.longitude.toString() +
-                  " " +
-                  _currentPosition.latitude.toString() +
-                  " " +
-                  _currentPosition.longitude.toString());
-              print((Location.distance(
-                  nearestLocation.latitude,
-                  _currentPosition.latitude,
-                  nearestLocation.longitude,
-                  _currentPosition.longitude)));
-              print((
-                nearestLocation.latitude,
-                nearestLocation.longitude,
-                _currentPosition.latitude,
-                _currentPosition.longitude
-              ));
-              print(extractLocations(widget.data.toString()));
-              print(widget.data.toString());
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const HlukScreen()),
+              );
             },
             child: Container(
                 decoration: const BoxDecoration(
