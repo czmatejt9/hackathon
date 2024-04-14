@@ -63,12 +63,12 @@ class _MapScreenState extends State<MapScreen> {
                           title: Text(
                               '${widget.data[i].name} (AQI ${widget.data[i].aqi})'),
                           content: Text('Aktualizace: $formattedTime\n'
-                              'SO2: ${widget.data[i].so2_1h} µg/m³\n'
-                              'CO: ${widget.data[i].co_8h} mg/m³\n'
-                              'O3: ${widget.data[i].o3_1h} µg/m³\n'
-                              'PM10: ${widget.data[i].pm10_24h} µg/m³\n'
-                              'PM2.5: ${widget.data[i].pm2_5_1h} µg/m³\n'
-                              'NO2: ${widget.data[i].no2_1h} µg/m³\n'),
+                              'SO2: ${widget.data[i].so2_1h ?? 'N/A'} µg/m³\n'
+                              'CO: ${widget.data[i].co_8h ?? 'N/A'} mg/m³\n'
+                              'O3: ${widget.data[i].o3_1h ?? 'N/A'} µg/m³\n'
+                              'PM10: ${widget.data[i].pm10_24h ?? 'N/A'} µg/m³\n'
+                              'PM2.5: ${widget.data[i].pm2_5_1h ?? 'N/A'} µg/m³\n'
+                              'NO2: ${widget.data[i].no2_1h ?? 'N/A'} µg/m³\n'),
                           actions: <Widget>[
                             TextButton(
                               onPressed: () {
@@ -83,11 +83,11 @@ class _MapScreenState extends State<MapScreen> {
                         // TODO read the actual sensor name
                         title: Text('Sensor ${i - 8}'),
                         content: Text('Aktualizace: $formattedTime\n'
-                            'Teplota: ${widget.data[i].temperature} °C\n'
-                            'Vlhkost: ${widget.data[i].humidity} %\n'
-                            'Tlak: ${widget.data[i].pressure} hPa\n'
-                            'Rychlost větru: ${widget.data[i].windSpeed} m/s\n'
-                            'Hladina zvuku: ${widget.data[i].volume} dB\n'),
+                            'Teplota: ${widget.data[i].temperature ?? 'N/A'} °C\n'
+                            'Vlhkost: ${widget.data[i].humidity ?? 'N/A'} %\n'
+                            'Tlak: ${widget.data[i].pressure ?? 'N/A'} hPa\n'
+                            'Rychlost větru: ${widget.data[i].windSpeed ?? 'N/A'} m/s\n'
+                            'Hladina zvuku: ${widget.data[i].volume ?? 'N/A'} dB\n'),
                       );
                     },
                   );
@@ -101,7 +101,9 @@ class _MapScreenState extends State<MapScreen> {
                                   : Colors.yellow
                               : Colors.green
                           : Colors.black,
-                      shape: BoxShape.circle,
+                      shape: widget.data[i].type == "BRNO_API"
+                          ? BoxShape.circle
+                          : BoxShape.rectangle,
                     ),
                     child: Center(
                       child: Text(
