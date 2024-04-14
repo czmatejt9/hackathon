@@ -4,7 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:geolocator/geolocator.dart';
-import 'dart:math';
+import 'dart:math' as math;
 
 class Location {
   final double latitude;
@@ -12,23 +12,29 @@ class Location {
 
   Location(this.latitude, this.longitude);
 
-  double distanceTo(Location other) {
-    const double earthRadius = 6371; // Radius of the earth in km
-    double lat1Rad = _degreesToRadians(latitude);
-    double lat2Rad = _degreesToRadians(other.latitude);
-    double latDiff = _degreesToRadians(other.latitude - latitude);
-    double lonDiff = _degreesToRadians(other.longitude - longitude);
+  static double distance(double lat1, double lat2, double lon1, double lon2) {
+    print(lat1.toString() +
+        " " +
+        lat2.toString() +
+        " " +
+        lon1.toString() +
+        " " +
+        lon2.toString());
+    const R = 6371e3; // metres
+    double phi1 = lat1 * math.pi / 180; // φ, λ in radians
+    double phi2 = lat2 * math.pi / 180;
+    double deltaPhi = (lat2 - lat1) * math.pi / 180;
+    double deltaLambda = (lon2 - lon1) * math.pi / 180;
 
-    double a = sin(latDiff / 2) * sin(latDiff / 2) +
-        cos(lat1Rad) * cos(lat2Rad) * sin(lonDiff / 2) * sin(lonDiff / 2);
-    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
-    double distance = earthRadius * c; // Distance in km
+    double a = math.sin(deltaPhi / 2) * math.sin(deltaPhi / 2) +
+        math.cos(phi1) *
+            math.cos(phi2) *
+            math.sin(deltaLambda / 2) *
+            math.sin(deltaLambda / 2);
 
-    return distance;
-  }
+    double c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
 
-  double _degreesToRadians(double degrees) {
-    return degrees * pi / 180;
+    return R * c; // in metres
   }
 }
 
@@ -43,26 +49,6 @@ class _HomeScreenState extends State<HomeScreen> {
   int teplota = 15;
   late Position _currentPosition;
 
-  double degreesToRadians(double degrees) {
-    return degrees * pi / 180;
-  }
-
-  double distanceInKmBetweenEarthCoordinates(
-      double lat1, double lon1, double lat2, double lon2) {
-    const double earthRadiusKm = 6371;
-
-    double dLat = degreesToRadians(lat2 - lat1);
-    double dLon = degreesToRadians(lon2 - lon1);
-
-    lat1 = degreesToRadians(lat1);
-    lat2 = degreesToRadians(lat2);
-
-    double a = sin(dLat / 2) * sin(dLat / 2) +
-        sin(dLon / 2) * sin(dLon / 2) * cos(lat1) * cos(lat2);
-    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
-    return earthRadiusKm * c;
-  }
-
   // Zadaná geolokace
 
   Location findNearestLocation(
@@ -71,11 +57,8 @@ class _HomeScreenState extends State<HomeScreen> {
     double minDistance = double.infinity;
 
     for (Location location in locations) {
-      double distance = distanceInKmBetweenEarthCoordinates(
-          targetLocation.latitude,
-          targetLocation.longitude,
-          location.latitude,
-          location.longitude);
+      double distance = Location.distance(targetLocation.latitude,
+          location.latitude, targetLocation.longitude, location.longitude);
       print(distance.toString());
       if (distance < minDistance) {
         minDistance = distance;
@@ -95,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
     for (Match match in matches) {
       double latitude = double.parse(match.group(1) ?? "Sobek");
       double longitude = double.parse(match.group(2) ?? "Sobíno");
-      locations.add(Location(latitude, longitude));
+      locations.add(Location(longitude, latitude));
     }
 
     return locations;
@@ -391,13 +374,25 @@ class _HomeScreenState extends State<HomeScreen> {
               print(
                   'Nejbližší lokace k zadané geolokaci: ${nearestLocation.latitude}, ${nearestLocation.longitude}');
               print(_currentPosition);
-              print(nearestLocation.distanceTo(Location(
-                  _currentPosition.latitude, _currentPosition.longitude)));
-              print(distanceInKmBetweenEarthCoordinates(
+              print("SOBEK");
+              print(nearestLocation.latitude.toString() +
+                  " " +
+                  nearestLocation.longitude.toString() +
+                  " " +
+                  _currentPosition.latitude.toString() +
+                  " " +
+                  _currentPosition.longitude.toString());
+              print((Location.distance(
                   nearestLocation.latitude,
-                  nearestLocation.longitude,
                   _currentPosition.latitude,
-                  _currentPosition.longitude));
+                  nearestLocation.longitude,
+                  _currentPosition.longitude)));
+              print((
+                nearestLocation.latitude,
+                nearestLocation.longitude,
+                _currentPosition.latitude,
+                _currentPosition.longitude
+              ));
               print(extractLocations(widget.data.toString()));
             },
             child: Container(
