@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -9,8 +7,10 @@ import 'package:TODO/air_quality_calculation.dart';
 
 class MapScreen extends StatefulWidget {
   final data;
+  double zoom = 11.5;
+  final MapController mapController = MapController();
 
-  const MapScreen({super.key, required this.data});
+  MapScreen({super.key, required this.data});
 
   @override
   State<MapScreen> createState() => _MapScreenState();
@@ -33,6 +33,7 @@ class _MapScreenState extends State<MapScreen> {
           AirQuality.parseValue(point['properties']['no2_1h'])));
     }
     return FlutterMap(
+      mapController: widget.mapController,
       options: const MapOptions(
         initialCenter: LatLng(
           // aprox Brno
@@ -115,6 +116,47 @@ class _MapScreenState extends State<MapScreen> {
               ),
             )
         ]),
+        // please add zoom buttons in the top right corner not using zoom buttons plugin
+        // I said right cornet not left bro
+
+        Positioned(
+          top: 10.0,
+          left: MediaQuery.of(context).size.width - 70.0,
+          child: Column(
+            children: [
+              FloatingActionButton(
+                onPressed: () {
+                  setState(() {
+                    widget.zoom += 0.5;
+                    if (widget.zoom > 20.0) {
+                      widget.zoom = 20.0;
+                    }
+                    widget.mapController.move(
+                      widget.mapController.center,
+                      widget.zoom,
+                    );
+                  });
+                },
+                child: const Icon(Icons.add),
+              ),
+              FloatingActionButton(
+                onPressed: () {
+                  setState(() {
+                    widget.zoom -= 0.5;
+                    if (widget.zoom < 10.0) {
+                      widget.zoom = 10.0;
+                    }
+                    widget.mapController.move(
+                      widget.mapController.center,
+                      widget.zoom,
+                    );
+                  });
+                },
+                child: const Icon(Icons.remove),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
