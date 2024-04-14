@@ -49,7 +49,7 @@ class _MapScreenState extends State<MapScreen> {
         openStreetMapTileLayer,
         CurrentLocationLayer(),
         MarkerLayer(markers: [
-          for (int i = 0; i < points.length; i++)
+          for (int i = 0; i < widget.data.length; i++)
             Marker(
               width: 33.0,
               height: 33.0,
@@ -61,9 +61,23 @@ class _MapScreenState extends State<MapScreen> {
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
+                      print(widget.data[i]['properties']['actualized']);
+                      var time = DateTime.fromMillisecondsSinceEpoch(
+                          widget.data[i]['properties']['actualized']);
+                      // select only date and time
+                      String formattedTime =
+                          '${time.day}.${time.month}.${time.year} ${time.hour}:${time.minute}';
+
                       return AlertDialog(
-                        title: const Text('Air Quality Index'),
-                        content: Text('AQI: ${aqiValues[i]}'),
+                        title: Text(widget.data[i]['properties']['name'] +
+                            ' (AQI ${aqiValues[i]})'),
+                        content: Text('Aktualizace: $formattedTime\n'
+                            'SO2: ${widget.data[i]['properties']['so2_1h'] ?? 'Nedostupné'}\n'
+                            'CO: ${widget.data[i]['properties']['co_8h'] ?? 'Nedostupné'}\n'
+                            'O3: ${widget.data[i]['properties']['o3_1h'] ?? 'Nedostupné'}\n'
+                            'PM10: ${widget.data[i]['properties']['pm10_24h'] ?? 'Nedostupné'}\n'
+                            'PM2.5: ${widget.data[i]['properties']['pm2_5_1h'] ?? 'Nedostupné'}\n'
+                            'NO2: ${widget.data[i]['properties']['no2_1h'] ?? 'Nedostupné'}\n'),
                         actions: <Widget>[
                           TextButton(
                             onPressed: () {
