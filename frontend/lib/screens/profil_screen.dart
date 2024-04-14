@@ -35,9 +35,17 @@ class _ProfilScreenState extends State<ProfilScreen> {
         color: Colors.blue,
         borderRadius: BorderRadius.circular(10.0),
       ),
-      child: const Text(
-        'Profilos',
-        style: TextStyle(fontSize: 24.0, color: Colors.white),
+      child: ListView.builder(
+        itemCount: widget.data.length,
+        itemBuilder: (context, index) {
+          return Card(
+            child: ListTile(
+              title: Text(widget.data[index].name ?? (index - 8).toString()),
+              subtitle: Text(
+                  'Coordinates: ${widget.data[index].position.latitude}, ${widget.data[index].position.longitude}'),
+            ),
+          );
+        },
       ),
     ));
   }
