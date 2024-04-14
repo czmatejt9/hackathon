@@ -74,7 +74,7 @@ class _MapScreenState extends State<MapScreen> {
                               onPressed: () {
                                 Navigator.of(context).pop();
                               },
-                              child: const Text('Close'),
+                              child: const Text('Zavřít'),
                             ),
                           ],
                         );
@@ -88,6 +88,14 @@ class _MapScreenState extends State<MapScreen> {
                             'Tlak: ${widget.data[i].pressure ?? 'N/A'} hPa\n'
                             'Rychlost větru: ${widget.data[i].windSpeed ?? 'N/A'} m/s\n'
                             'Hladina zvuku: ${widget.data[i].volume ?? 'N/A'} dB\n'),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Zavřít'),
+                          ),
+                        ],
                       );
                     },
                   );
