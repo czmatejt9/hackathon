@@ -4,9 +4,10 @@ import 'package:latlong2/latlong.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:dio/dio.dart';
 import 'package:TODO/air_quality_calculation.dart';
+import 'package:TODO/models/data_point.dart';
 
 class MapScreen extends StatefulWidget {
-  final data;
+  final List<DataPoint> data;
   double zoom = 11.5;
   final MapController mapController = MapController();
 
@@ -17,21 +18,8 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  List points = [];
-  List aqiValues = [];
   @override
   Widget build(BuildContext context) {
-    for (var point in widget.data) {
-      points.add(LatLng(point['geometry']['coordinates'][1],
-          point['geometry']['coordinates'][0]));
-      aqiValues.add(AirQuality.calculation(
-          AirQuality.parseValue(point['properties']['so2_1h']),
-          AirQuality.parseValue(point['properties']['co_8h']),
-          AirQuality.parseValue(point['properties']['o3_1h']),
-          AirQuality.parseValue(point['properties']['pm10_24h']),
-          AirQuality.parseValue(point['properties']['pm2_5_1h']),
-          AirQuality.parseValue(point['properties']['no2_1h'])));
-    }
     return FlutterMap(
       mapController: widget.mapController,
       options: const MapOptions(
@@ -54,7 +42,10 @@ class _MapScreenState extends State<MapScreen> {
             Marker(
               width: 33.0,
               height: 33.0,
-              point: LatLng(points[i].latitude, points[i].longitude),
+              point: LatLng(
+                widget.data[i].position.latitude,
+                widget.data[i].position.longitude,
+              ),
               child: // show icon circle with number in the middle
                   GestureDetector(
                 onTap: () {
@@ -62,53 +53,65 @@ class _MapScreenState extends State<MapScreen> {
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
-                      print(widget.data[i]['properties']['actualized']);
                       var time = DateTime.fromMillisecondsSinceEpoch(
-                          widget.data[i]['properties']['actualized']);
+                          (widget.data[i].timestamp).toInt());
                       // select only date and time
                       String formattedTime =
-                          '${time.day}.${time.month}.${time.year} ${time.hour}:${time.minute}';
-
+                          '${time.day}.${time.month}.${time.year} ${time.hour}:${time.minute.toString().padLeft(2, '0')}';
+                      if (widget.data[i].type == 'BRNO_API') {
+                        return AlertDialog(
+                          title: Text(
+                              '${widget.data[i].name} (AQI ${widget.data[i].aqi})'),
+                          content: Text('Aktualizace: $formattedTime\n'
+                              'SO2: ${widget.data[i].so2_1h} µg/m³\n'
+                              'CO: ${widget.data[i].co_8h} mg/m³\n'
+                              'O3: ${widget.data[i].o3_1h} µg/m³\n'
+                              'PM10: ${widget.data[i].pm10_24h} µg/m³\n'
+                              'PM2.5: ${widget.data[i].pm2_5_1h} µg/m³\n'
+                              'NO2: ${widget.data[i].no2_1h} µg/m³\n'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('Close'),
+                            ),
+                          ],
+                        );
+                      }
                       return AlertDialog(
-                        title: Text(widget.data[i]['properties']['name'] +
-                            ' (AQI ${aqiValues[i]})'),
+                        // TODO read the actual sensor name
+                        title: Text('Sensor ${i - 8}'),
                         content: Text('Aktualizace: $formattedTime\n'
-                            'SO2: ${widget.data[i]['properties']['so2_1h'] ?? 'Nedostupné'}\n'
-                            'CO: ${widget.data[i]['properties']['co_8h'] ?? 'Nedostupné'}\n'
-                            'O3: ${widget.data[i]['properties']['o3_1h'] ?? 'Nedostupné'}\n'
-                            'PM10: ${widget.data[i]['properties']['pm10_24h'] ?? 'Nedostupné'}\n'
-                            'PM2.5: ${widget.data[i]['properties']['pm2_5_1h'] ?? 'Nedostupné'}\n'
-                            'NO2: ${widget.data[i]['properties']['no2_1h'] ?? 'Nedostupné'}\n'),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: const Text('Close'),
-                          ),
-                        ],
+                            'Teplota: ${widget.data[i].temperature} °C\n'
+                            'Vlhkost: ${widget.data[i].humidity} %\n'
+                            'Tlak: ${widget.data[i].pressure} hPa\n'
+                            'Rychlost větru: ${widget.data[i].windSpeed} m/s\n'
+                            'Hladina zvuku: ${widget.data[i].volume} dB\n'),
                       );
                     },
                   );
                 },
                 child: Container(
                     decoration: BoxDecoration(
-                      color: aqiValues[i] < 50
-                          ? Colors.green
-                          : aqiValues[i] < 100
-                              ? Colors.yellow
-                              : aqiValues[i] < 150
-                                  ? Colors.orange
-                                  : aqiValues[i] < 200
-                                      ? Colors.red
-                                      : Colors.purple,
+                      color: widget.data[i].aqi != null
+                          ? widget.data[i].aqi! > 50
+                              ? widget.data[i].aqi! > 100
+                                  ? Colors.red
+                                  : Colors.yellow
+                              : Colors.green
+                          : Colors.black,
                       shape: BoxShape.circle,
                     ),
                     child: Center(
                       child: Text(
-                        aqiValues[i].toString(),
-                        style: const TextStyle(
-                          color: Colors.black,
+                        widget.data[i].type == 'BRNO_API'
+                            ? widget.data[i].aqi.toString()
+                            : widget.data[i].temperature.toString(),
+                        style: TextStyle(
+                          color: widget.data[i].type == 'BRNO_API'
+                              ? Colors.black
+                              : Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
                       ),

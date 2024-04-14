@@ -1,7 +1,9 @@
+import 'package:TODO/models/data_point.dart';
 import 'package:flutter/material.dart';
+import 'package:TODO/screens/home_screen.dart';
 
 class ProfilScreen extends StatefulWidget {
-  final data;
+  final List<DataPoint> data;
   const ProfilScreen({super.key, required this.data});
   @override
   State<ProfilScreen> createState() => _ProfilScreenState();

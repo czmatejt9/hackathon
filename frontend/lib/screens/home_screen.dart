@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:math' as math;
-
+import 'package:TODO/models/data_point.dart';
 import 'package:latlong2/latlong.dart';
 
 class Location {
@@ -17,13 +17,6 @@ class Location {
   Location(this.latitude, this.longitude);
 
   static double distance(double lat1, double lat2, double lon1, double lon2) {
-    print(lat1.toString() +
-        " " +
-        lat2.toString() +
-        " " +
-        lon1.toString() +
-        " " +
-        lon2.toString());
     const R = 6371e3; // metres
     double phi1 = lat1 * math.pi / 180; // φ, λ in radians
     double phi2 = lat2 * math.pi / 180;
@@ -43,7 +36,7 @@ class Location {
 }
 
 class HomeScreen extends StatefulWidget {
-  final data;
+  final List<DataPoint> data;
   const HomeScreen({super.key, required this.data});
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -88,21 +81,14 @@ class _HomeScreenState extends State<HomeScreen> {
     return locations;
   }
 
-  List points = [];
   List aqiValues = [];
 
   @override
   Widget build(BuildContext context) {
     for (var point in widget.data) {
-      points.add(LatLng(point['geometry']['coordinates'][1],
-          point['geometry']['coordinates'][0]));
-      aqiValues.add(AirQuality.calculation(
-          AirQuality.parseValue(point['properties']['so2_1h']),
-          AirQuality.parseValue(point['properties']['co_8h']),
-          AirQuality.parseValue(point['properties']['o3_1h']),
-          AirQuality.parseValue(point['properties']['pm10_24h']),
-          AirQuality.parseValue(point['properties']['pm2_5_1h']),
-          AirQuality.parseValue(point['properties']['no2_1h'])));
+      if (point.aqi != null) {
+        aqiValues.add(point.aqi);
+      }
     }
     return Container(
       color: const Color.fromARGB(118, 184, 184, 184),

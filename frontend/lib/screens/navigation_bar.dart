@@ -3,6 +3,7 @@ import 'package:TODO/screens/map_screen.dart';
 import 'package:TODO/screens/profil_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:TODO/models/data_point.dart';
 
 class BottomBar extends StatefulWidget {
   final data;
@@ -137,5 +138,34 @@ Future<List<dynamic>> getData() async {
       new_data.add(data[i]);
     }
   }
-  return new_data;
+  List<DataPoint> new_new_data = [];
+  for (int i = 0; i < new_data.length; i++) {
+    new_new_data.add(DataPoint.fromBrnoApi(new_data[i]));
+    new_new_data[i].setAqi();
+  }
+
+  // now our sensors
+  await dio.get('http://10.182.36.176:5000').then((response) {
+    data = response.data['sensors'];
+  }).catchError((error) {
+    print(error);
+    return Future(() => null);
+  });
+  for (int i = 0; i < data.length; i++) {
+    if (i == 2) {
+      new_new_data.last.volume = double.parse(data[i]['value'].substring(1));
+      continue;
+    }
+    String? lat, lon;
+    if (i == 0) {
+      lat = "49.1781172";
+      lon = "16.6042969";
+    } else {
+      lat = "49.1812072";
+      lon = "16.6040314";
+    }
+    new_new_data.add(DataPoint.fromOurSensor(data[i], lat, lon));
+    new_new_data[i + new_data.length].setAqi();
+  }
+  return new_new_data;
 }
