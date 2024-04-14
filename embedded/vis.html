@@ -3,8 +3,11 @@
   <head>
     <title>JSON Data Display</title>
     <style>
-      #data {
-        white-space: pre;  /* Make whitespace significant */
+      .device {
+        margin-bottom: 1em;
+      }
+      .device > div {
+        margin-bottom: 0.5em;
       }
     </style>
     <script>
@@ -12,16 +15,45 @@
         fetch('http://10.182.36.176:5000')
           .then(response => response.json())
           .then(data => {
-            document.getElementById('data').textContent = JSON.stringify(data, null, 2);
+            const devices = {};
+            data.sensors.forEach(sensor => {
+              if (!devices[sensor.did]) {
+                devices[sensor.did] = {
+                  lastUpdated: sensor.time,
+                  sensors: []
+                };
+              }
+              devices[sensor.did].sensors.push(sensor);
+              if (sensor.time > devices[sensor.did].lastUpdated) {
+                devices[sensor.did].lastUpdated = sensor.time;
+              }
+            });
+
+            const dataDiv = document.getElementById('data');
+            dataDiv.innerHTML = '';
+            for (const did in devices) {
+              const deviceDiv = document.createElement('div');
+              deviceDiv.className = 'device';
+              deviceDiv.innerHTML = `<h2>Device ID: ${did}</h2>
+                                     <p>Last Updated: ${devices[did].lastUpdated}</p>`;
+              devices[did].sensors.forEach(sensor => {
+                const sensorDiv = document.createElement('div');
+                sensorDiv.innerHTML = `<h3>Sensor ID: ${sensor.sid}</h3>
+                                       <p>Type: ${sensor.type}</p>
+                                       <p>Value: ${sensor.value}</p>`;
+                deviceDiv.appendChild(sensorDiv);
+              });
+              dataDiv.appendChild(deviceDiv);
+            }
           })
           .catch(error => console.error('Error:', error));
       }
 
       // Fetch data every 5 seconds
-      setInterval(fetchData, 5000);
+      setInterval(fetchData, 2000);
     </script>
   </head>
   <body onload="fetchData()">
-    <pre id="data"></pre>
+    <div id="data"></div>
   </body>
 </html>
