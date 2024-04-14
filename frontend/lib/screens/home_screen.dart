@@ -114,6 +114,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
     Location nearestLocation =
         findNearestLocation(targetLocation, extractLocations(widget.data));
+    int values = 0;
+    int c = 0;
+    for (DataPoint point in widget.data) {
+      if (point.aqi != null) {
+        values += point.aqi!;
+        c += 1;
+      }
+    }
+    double values_vlhkost = widget.data.last.humidity!;
+    double values_teplota = widget.data.last.temperature!;
+
     return Container(
       color: const Color.fromARGB(118, 184, 184, 184),
       child: Column(
@@ -205,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           Text(
-                            aqiValues[0].toString(),
+                            (values / c).round().toString(),
                             style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 20,
@@ -231,7 +242,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           Text(
-                            vlhkost.toString() + "%",
+                            values_vlhkost.round().toString() + "%",
                             style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 20,
@@ -257,7 +268,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           Text(
-                            teplota.toString() + "℃",
+                            values_teplota.round().toString() + "℃",
                             style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 20,
@@ -275,7 +286,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => KvalitaScreen(
-                          airquality: aqiValues[0],
+                          airquality: (values / c).round(),
                         )),
               );
             },
@@ -316,7 +327,9 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const VlhkostScreen()),
+                MaterialPageRoute(
+                    builder: (context) =>
+                        VlhkostScreen(vlhkost: values_vlhkost.round())),
               );
             },
             child: Container(
@@ -356,7 +369,10 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const TeplotaScreen()),
+                MaterialPageRoute(
+                    builder: (context) => TeplotaScreen(
+                          teplota: values_teplota.round(),
+                        )),
               );
             },
             child: Container(

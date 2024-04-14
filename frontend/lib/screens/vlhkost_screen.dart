@@ -2,88 +2,88 @@ import 'package:flutter/material.dart';
 import 'package:pie_chart/pie_chart.dart';
 
 class VlhkostScreen extends StatefulWidget {
-  const VlhkostScreen({super.key});
+  final vlhkost;
+  const VlhkostScreen({super.key, this.vlhkost});
   @override
   State<VlhkostScreen> createState() => _VlhkostScreenState();
 }
 
 class _VlhkostScreenState extends State<VlhkostScreen> {
-  int vlhkost_vzduchu = 75;
   dynamic barva_grafu = Colors.black;
   Map<String, double> dataMap = {"Sobek": 0};
 
   @override
   void initState() {
     super.initState();
-    print(vlhkost_vzduchu);
-    if (vlhkost_vzduchu <= 10) {
+    print(widget.vlhkost);
+    if (widget.vlhkost <= 10) {
       setState(() {
         dataMap = {
-          "Velmi špatná": vlhkost_vzduchu.toDouble(),
+          "Velmi špatná": widget.vlhkost.toDouble(),
         };
         barva_grafu = Colors.red;
       });
     }
-    if (vlhkost_vzduchu <= 25 && vlhkost_vzduchu > 10) {
+    if (widget.vlhkost <= 25 && widget.vlhkost > 10) {
       setState(() {
         dataMap = {
-          "Špatná": vlhkost_vzduchu.toDouble(),
+          "Špatná": widget.vlhkost.toDouble(),
         };
         barva_grafu = const Color.fromARGB(255, 244, 174, 54);
       });
     }
-    if (vlhkost_vzduchu <= 40 && vlhkost_vzduchu > 25) {
+    if (widget.vlhkost <= 40 && widget.vlhkost > 25) {
       setState(() {
         dataMap = {
-          "Střední": vlhkost_vzduchu.toDouble(),
+          "Střední": widget.vlhkost.toDouble(),
         };
         barva_grafu = const Color.fromARGB(255, 193, 244, 54);
       });
     }
-    if (vlhkost_vzduchu <= 50 && vlhkost_vzduchu > 40) {
+    if (widget.vlhkost <= 50 && widget.vlhkost > 40) {
       setState(() {
         dataMap = {
-          "Dobrá": vlhkost_vzduchu.toDouble(),
+          "Dobrá": widget.vlhkost.toDouble(),
         };
         barva_grafu = const Color.fromARGB(255, 57, 244, 54);
       });
     }
-    if (vlhkost_vzduchu <= 65 && vlhkost_vzduchu > 50) {
+    if (widget.vlhkost <= 65 && widget.vlhkost > 50) {
       setState(() {
         dataMap = {
-          "Vynikající": vlhkost_vzduchu.toDouble(),
+          "Vynikající": widget.vlhkost.toDouble(),
         };
         barva_grafu = const Color.fromARGB(255, 54, 244, 216);
       });
     }
-    if (vlhkost_vzduchu <= 75 && vlhkost_vzduchu > 65) {
+    if (widget.vlhkost <= 75 && widget.vlhkost > 65) {
       setState(() {
         dataMap = {
-          "Dobrá": (100 - vlhkost_vzduchu).toDouble(),
+          "Dobrá": (100 - widget.vlhkost).toDouble(),
         };
         barva_grafu = const Color.fromARGB(255, 57, 244, 54);
       });
     }
-    if (vlhkost_vzduchu <= 85 && vlhkost_vzduchu > 75) {
+    if (widget.vlhkost <= 85 && widget.vlhkost > 75) {
       setState(() {
         dataMap = {
-          "Střední": (100 - vlhkost_vzduchu).toDouble(),
+          "Střední": (100 - widget.vlhkost).toDouble(),
         };
         barva_grafu = const Color.fromARGB(255, 193, 244, 54);
       });
     }
-    if (vlhkost_vzduchu <= 95 && vlhkost_vzduchu > 85) {
+    if (widget.vlhkost <= 95 && widget.vlhkost > 85) {
       setState(() {
         dataMap = {
-          "Špatná": (100 - vlhkost_vzduchu).toDouble(),
+          "Špatná": (100 - widget.vlhkost).toDouble(),
         };
         barva_grafu = const Color.fromARGB(255, 244, 174, 54);
       });
     }
-    if (vlhkost_vzduchu <= 100 && vlhkost_vzduchu > 95) {
+    if (widget.vlhkost <= 100 && widget.vlhkost > 95) {
       setState(() {
         dataMap = {
-          "Velmi špatná": (100 - vlhkost_vzduchu).toDouble(),
+          "Velmi špatná": (100 - widget.vlhkost).toDouble(),
         };
         barva_grafu = Colors.red;
       });
@@ -164,7 +164,7 @@ class _VlhkostScreenState extends State<VlhkostScreen> {
                         ringStrokeWidth: 32,
                         baseChartColor: const Color.fromARGB(255, 0, 0, 0)!
                             .withOpacity(0.15),
-                        centerText: vlhkost_vzduchu.toString() + "%",
+                        centerText: widget.vlhkost.toString() + "%",
                         legendOptions: const LegendOptions(
                           showLegendsInRow: false,
                           legendPosition: LegendPosition.right,

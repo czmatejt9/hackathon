@@ -4,65 +4,65 @@ import 'package:flutter/material.dart';
 import 'package:pie_chart/pie_chart.dart';
 
 class TeplotaScreen extends StatefulWidget {
-  const TeplotaScreen({super.key});
+  final teplota;
+  const TeplotaScreen({super.key, this.teplota});
   @override
   State<TeplotaScreen> createState() => _TeplotaScreenState();
 }
 
 class _TeplotaScreenState extends State<TeplotaScreen> {
-  int teplota = 21;
   Map<String, double> dataMap = {"Sobek": 0};
   dynamic barva_grafu = Colors.black;
 
   @override
   void initState() {
     super.initState();
-    if (teplota <= 0) {
+    if (widget.teplota <= 0) {
       setState(() {
         barva_grafu = Color.fromARGB(255, 98, 0, 243);
-        dataMap = {"Mrazivo": teplota.toDouble()};
+        dataMap = {"Mrazivo": widget.teplota.toDouble()};
       });
     }
-    if (teplota <= 10 && teplota > 0) {
+    if (widget.teplota <= 10 && widget.teplota > 0) {
       setState(() {
         barva_grafu = Color.fromARGB(255, 1, 34, 255);
-        dataMap = {"Studeno": teplota.toDouble()};
+        dataMap = {"Studeno": widget.teplota.toDouble()};
       });
     }
-    if (teplota <= 15 && teplota > 10) {
+    if (widget.teplota <= 15 && widget.teplota > 10) {
       setState(() {
         barva_grafu = Color.fromARGB(255, 1, 166, 255);
-        dataMap = {"Chladno": teplota.toDouble()};
+        dataMap = {"Chladno": widget.teplota.toDouble()};
       });
     }
-    if (teplota <= 20 && teplota > 15) {
+    if (widget.teplota <= 20 && widget.teplota > 15) {
       setState(() {
         barva_grafu = Color.fromARGB(255, 255, 225, 1);
-        dataMap = {"Na mikinku": teplota.toDouble()};
+        dataMap = {"Na mikinku": widget.teplota.toDouble()};
       });
     }
-    if (teplota <= 25 && teplota > 20) {
+    if (widget.teplota <= 25 && widget.teplota > 20) {
       setState(() {
         barva_grafu = Color.fromARGB(255, 255, 179, 1);
-        dataMap = {"Pokojová teplota": teplota.toDouble()};
+        dataMap = {"Pokojová teplota": widget.teplota.toDouble()};
       });
     }
-    if (teplota <= 30 && teplota > 25) {
+    if (widget.teplota <= 30 && widget.teplota > 25) {
       setState(() {
         barva_grafu = Color.fromARGB(255, 255, 111, 1);
-        dataMap = {"Teplo": teplota.toDouble()};
+        dataMap = {"Teplo": widget.teplota.toDouble()};
       });
     }
-    if (teplota > 30) {
+    if (widget.teplota > 30) {
       setState(() {
         barva_grafu = Color.fromARGB(255, 255, 1, 1);
-        dataMap = {"Horko": teplota.toDouble()};
+        dataMap = {"Horko": widget.teplota.toDouble()};
       });
     }
-    if (teplota > 15000000) {
+    if (widget.teplota > 15000000) {
       setState(() {
         barva_grafu = Color.fromARGB(255, 255, 1, 1);
-        dataMap = {"Sluníčko fr 🌞": teplota.toDouble()};
+        dataMap = {"Sluníčko fr 🌞": widget.teplota.toDouble()};
       });
     }
   }
@@ -139,7 +139,7 @@ class _TeplotaScreenState extends State<TeplotaScreen> {
                     ringStrokeWidth: 32,
                     baseChartColor:
                         const Color.fromARGB(255, 0, 0, 0)!.withOpacity(0.15),
-                    centerText: teplota.toString() + "℃",
+                    centerText: widget.teplota.toString() + "℃",
                     legendOptions: const LegendOptions(
                       showLegendsInRow: false,
                       legendPosition: LegendPosition.right,
