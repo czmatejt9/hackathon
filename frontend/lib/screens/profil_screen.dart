@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ProfilScreen extends StatefulWidget {
-  const ProfilScreen({super.key});
+  final data;
+  const ProfilScreen({super.key, required this.data});
   @override
   State<ProfilScreen> createState() => _ProfilScreenState();
 }

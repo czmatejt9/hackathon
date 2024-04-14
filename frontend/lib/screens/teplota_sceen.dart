@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:pie_chart/pie_chart.dart';
 
@@ -8,90 +10,59 @@ class TeplotaScreen extends StatefulWidget {
 }
 
 class _TeplotaScreenState extends State<TeplotaScreen> {
-  int teplota = 70;
-  Map<String, double> dataMap = {"ok": 40};
+  int teplota = 21;
+  Map<String, double> dataMap = {"Sobek": 0};
+  dynamic barva_grafu = Colors.black;
 
   @override
   void initState() {
     super.initState();
-    print(teplota);
-    if (teplota <= 10) {
+    if (teplota <= 0) {
       setState(() {
-        dataMap = {
-          " 0%-10% Velmi špatná": teplota.toDouble(),
-        };
+        barva_grafu = Color.fromARGB(255, 98, 0, 243);
+        dataMap = {"Mrazivo": teplota.toDouble()};
       });
     }
-    if (teplota <= 25 && teplota > 10) {
+    if (teplota <= 10 && teplota > 0) {
       setState(() {
-        dataMap = {
-          " 0%-10% Velmi špatná": 10,
-          "10%-25% Špatná": teplota.toDouble(),
-        };
+        barva_grafu = Color.fromARGB(255, 1, 34, 255);
+        dataMap = {"Studeno": teplota.toDouble()};
       });
     }
-    if (teplota <= 40 && teplota > 25) {
+    if (teplota <= 15 && teplota > 10) {
       setState(() {
-        dataMap = {
-          " 0%-10% Velmi špatná": 10,
-          "10%-25% Špatná": 25,
-          "25%-40% Střední": teplota.toDouble(),
-        };
+        barva_grafu = Color.fromARGB(255, 1, 166, 255);
+        dataMap = {"Chladno": teplota.toDouble()};
       });
     }
-    if (teplota <= 50 && teplota > 40) {
+    if (teplota <= 20 && teplota > 15) {
       setState(() {
-        dataMap = {
-          " 0%-10% Velmi špatná": 10,
-          "10%-25% Špatná": 25,
-          "25%-40% Střední": 40,
-          "40%-50% Dobrá": teplota.toDouble(),
-        };
+        barva_grafu = Color.fromARGB(255, 255, 225, 1);
+        dataMap = {"Na mikinku": teplota.toDouble()};
       });
     }
-    if (teplota <= 65 && teplota > 50) {
+    if (teplota <= 25 && teplota > 20) {
       setState(() {
-        dataMap = {
-          " 0%-10% Velmi špatná": 10,
-          "10%-25% Špatná": 25,
-          "25%-40% Střední": 40,
-          "40%-50% Dobrá": 50,
-          "50%-65% Vynikající": teplota.toDouble(),
-        };
+        barva_grafu = Color.fromARGB(255, 255, 179, 1);
+        dataMap = {"Pokojová teplota": teplota.toDouble()};
       });
     }
-    if (teplota <= 75 && teplota > 65) {
+    if (teplota <= 30 && teplota > 25) {
       setState(() {
-        dataMap = {
-          "100%-95% Velmi špatná": 10,
-          "95%-85% Špatná": 25,
-          "85%-75% Střední": 40,
-          "75%-65% Dobrá": teplota.toDouble(),
-        };
+        barva_grafu = Color.fromARGB(255, 255, 111, 1);
+        dataMap = {"Teplo": teplota.toDouble()};
       });
     }
-    if (teplota <= 85 && teplota > 75) {
+    if (teplota > 30) {
       setState(() {
-        dataMap = {
-          "100%-95% Velmi špatná": 10,
-          "95%-85% Špatná": 25,
-          "85%-75% Střední": teplota.toDouble(),
-        };
+        barva_grafu = Color.fromARGB(255, 255, 1, 1);
+        dataMap = {"Horko": teplota.toDouble()};
       });
     }
-    if (teplota <= 95 && teplota > 85) {
+    if (teplota > 15000000) {
       setState(() {
-        dataMap = {
-          "100%-95% Velmi špatná": 10,
-          "95%-85% Špatná": teplota.toDouble(),
-        };
-      });
-    }
-    if (teplota <= 100 && teplota > 95) {
-      setState(() {
-        dataMap = {
-          "100%-95% Velmi špatná": teplota.toDouble(),
-        };
+        barva_grafu = Color.fromARGB(255, 255, 1, 1);
+        dataMap = {"Sluníčko fr 🌞": teplota.toDouble()};
       });
     }
   }
@@ -107,7 +78,7 @@ class _TeplotaScreenState extends State<TeplotaScreen> {
                 end: Alignment.bottomCenter,
                 colors: <Color>[
                   Color.fromARGB(255, 28, 169, 212),
-                  Color.fromARGB(255, 139, 204, 242),
+                  Color.fromARGB(255, 14, 211, 211),
                 ]),
           ),
         ),
@@ -118,17 +89,18 @@ class _TeplotaScreenState extends State<TeplotaScreen> {
       ),
       body: Column(
         children: [
+          Padding(padding: EdgeInsets.only(top: 10)),
           Padding(
-            padding: const EdgeInsets.all(15),
+            padding: const EdgeInsets.all(10),
             child: Container(
                 decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
                   gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: <Color>[
                         Color.fromARGB(255, 28, 169, 212),
-                        Color.fromARGB(255, 139, 204, 242),
+                        Color.fromARGB(255, 14, 211, 211),
                       ]),
                 ),
                 child: const Padding(
@@ -136,7 +108,9 @@ class _TeplotaScreenState extends State<TeplotaScreen> {
                     child: Text(
                       "Teplota vzduchu ovlivňuje pohodu a zdraví. Ideální rozmezí pro většinu lidí je mezi 20 až 25 stupni Celsia. Příliš vysoké teploty mohou způsobit dehydrataci a vyčerpání, zatímco příliš nízké teploty mohou vést k pocitům chladu a svalovému napětí. Udržování vhodné teploty ve vnitřních prostorách je klíčové pro komfort a pohodu.",
                       style: TextStyle(
-                          fontWeight: FontWeight.w600, color: Colors.white),
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                          fontSize: 15),
                     ))),
           ),
           Padding(
@@ -148,8 +122,8 @@ class _TeplotaScreenState extends State<TeplotaScreen> {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: <Color>[
-                        Color.fromARGB(255, 28, 169, 212),
-                        Color.fromARGB(255, 139, 204, 242),
+                        Color.fromARGB(0, 28, 169, 212),
+                        Color.fromARGB(0, 139, 204, 242),
                       ]),
                 ),
                 child: Padding(
@@ -159,13 +133,7 @@ class _TeplotaScreenState extends State<TeplotaScreen> {
                     animationDuration: const Duration(milliseconds: 800),
                     chartLegendSpacing: 32,
                     chartRadius: MediaQuery.of(context).size.width / 3.2,
-                    colorList: const [
-                      Colors.red,
-                      Colors.orange,
-                      Colors.green,
-                      Colors.blue,
-                      Colors.purple
-                    ],
+                    colorList: [barva_grafu],
                     initialAngleInDegree: 0,
                     chartType: ChartType.ring,
                     ringStrokeWidth: 32,
@@ -188,7 +156,7 @@ class _TeplotaScreenState extends State<TeplotaScreen> {
                       showChartValuesOutside: true,
                       decimalPlaces: 0,
                     ),
-                    totalValue: 200,
+                    totalValue: 50,
                   ),
                 )),
           ),

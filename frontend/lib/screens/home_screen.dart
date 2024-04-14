@@ -1,23 +1,114 @@
+import 'package:TODO/air_quality_calculation.dart';
+import 'package:TODO/screens/kvalita_screen.dart';
 import 'package:TODO/screens/teplota_sceen.dart';
 import 'package:TODO/screens/vlhkost_screen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
+import 'package:geolocator/geolocator.dart';
+import 'dart:math' as math;
+
+import 'package:latlong2/latlong.dart';
+
+class Location {
+  final double latitude;
+  final double longitude;
+
+  Location(this.latitude, this.longitude);
+
+  static double distance(double lat1, double lat2, double lon1, double lon2) {
+    print(lat1.toString() +
+        " " +
+        lat2.toString() +
+        " " +
+        lon1.toString() +
+        " " +
+        lon2.toString());
+    const R = 6371e3; // metres
+    double phi1 = lat1 * math.pi / 180; // φ, λ in radians
+    double phi2 = lat2 * math.pi / 180;
+    double deltaPhi = (lat2 - lat1) * math.pi / 180;
+    double deltaLambda = (lon2 - lon1) * math.pi / 180;
+
+    double a = math.sin(deltaPhi / 2) * math.sin(deltaPhi / 2) +
+        math.cos(phi1) *
+            math.cos(phi2) *
+            math.sin(deltaLambda / 2) *
+            math.sin(deltaLambda / 2);
+
+    double c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
+
+    return R * c; // in metres
+  }
+}
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final data;
+  const HomeScreen({super.key, required this.data});
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   int teplota = 15;
+  late Position _currentPosition;
+
+  // Zadaná geolokace
+
+  Location findNearestLocation(
+      Location targetLocation, List<Location> locations) {
+    late Location nearestLocation;
+    double minDistance = double.infinity;
+
+    for (Location location in locations) {
+      double distance = Location.distance(targetLocation.latitude,
+          location.latitude, targetLocation.longitude, location.longitude);
+      print(distance.toString());
+      if (distance < minDistance) {
+        minDistance = distance;
+        nearestLocation = location;
+      }
+    }
+
+    return nearestLocation;
+  }
+
+  List<Location> extractLocations(String data) {
+    List<Location> locations = [];
+
+    RegExp regex = RegExp(r'\[(-?\d+\.\d+), (-?\d+\.\d+)\]');
+    Iterable<Match> matches = regex.allMatches(data);
+
+    for (Match match in matches) {
+      double latitude = double.parse(match.group(1) ?? "Sobek");
+      double longitude = double.parse(match.group(2) ?? "Sobíno");
+      locations.add(Location(longitude, latitude));
+    }
+
+    return locations;
+  }
+
+  List points = [];
+  List aqiValues = [];
+
   @override
   Widget build(BuildContext context) {
+    for (var point in widget.data) {
+      points.add(LatLng(point['geometry']['coordinates'][1],
+          point['geometry']['coordinates'][0]));
+      aqiValues.add(AirQuality.calculation(
+          AirQuality.parseValue(point['properties']['so2_1h']),
+          AirQuality.parseValue(point['properties']['co_8h']),
+          AirQuality.parseValue(point['properties']['o3_1h']),
+          AirQuality.parseValue(point['properties']['pm10_24h']),
+          AirQuality.parseValue(point['properties']['pm2_5_1h']),
+          AirQuality.parseValue(point['properties']['no2_1h'])));
+    }
     return Container(
-      color: Color.fromARGB(118, 184, 184, 184),
+      color: const Color.fromARGB(118, 184, 184, 184),
       child: Column(
         children: [
-          Padding(padding: EdgeInsets.only(top: 10)),
+          const Padding(padding: EdgeInsets.only(top: 10)),
           TextButton(
             onPressed: () {},
             child: Container(
@@ -41,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Text(
                             "Aktuální poloha",
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                               fontWeight: FontWeight.bold,
                               fontSize: 30,
                             ),
@@ -66,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           const Text(
                             "Nebližší snímač  ",
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                               fontSize: 20,
                             ),
                           ),
@@ -92,12 +183,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           const Text(
                             "Kvalita ovzduší  ",
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                               fontSize: 20,
                             ),
                           ),
                           Text(
-                            teplota.toString() + "℃",
+                            aqiValues[0].toString(),
                             style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 20,
@@ -118,7 +209,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           const Text(
                             "Vlhkost vzduchu  ",
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                               fontSize: 20,
                             ),
                           ),
@@ -144,7 +235,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           const Text(
                             "Teplota  ",
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                               fontSize: 20,
                             ),
                           ),
@@ -165,7 +256,10 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const VlhkostScreen()),
+                MaterialPageRoute(
+                    builder: (context) => KvalitaScreen(
+                          airquality: aqiValues[0],
+                        )),
               );
             },
             child: Container(
@@ -195,7 +289,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: TextStyle(
                             fontSize: 25,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white),
+                            color: Colors.black),
                       )
                     ],
                   ),
@@ -235,7 +329,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: TextStyle(
                             fontSize: 25,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white),
+                            color: Colors.black),
                       )
                     ],
                   ),
@@ -275,14 +369,54 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: TextStyle(
                             fontSize: 25,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white),
+                            color: Colors.black),
                       )
                     ],
                   ),
                 )),
           ),
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              Geolocator.getCurrentPosition(
+                      desiredAccuracy: LocationAccuracy.best,
+                      forceAndroidLocationManager: true)
+                  .then((Position position) {
+                setState(() {
+                  _currentPosition = position;
+                });
+              }).catchError((e) {
+                print(e);
+              });
+              Location targetLocation = Location(
+                  _currentPosition.latitude, _currentPosition.longitude);
+
+              Location nearestLocation = findNearestLocation(
+                  targetLocation, extractLocations(widget.data.toString()));
+              print(
+                  'Nejbližší lokace k zadané geolokaci: ${nearestLocation.latitude}, ${nearestLocation.longitude}');
+              print(_currentPosition);
+              print("SOBEK");
+              print(nearestLocation.latitude.toString() +
+                  " " +
+                  nearestLocation.longitude.toString() +
+                  " " +
+                  _currentPosition.latitude.toString() +
+                  " " +
+                  _currentPosition.longitude.toString());
+              print((Location.distance(
+                  nearestLocation.latitude,
+                  _currentPosition.latitude,
+                  nearestLocation.longitude,
+                  _currentPosition.longitude)));
+              print((
+                nearestLocation.latitude,
+                nearestLocation.longitude,
+                _currentPosition.latitude,
+                _currentPosition.longitude
+              ));
+              print(extractLocations(widget.data.toString()));
+              print(widget.data.toString());
+            },
             child: Container(
                 decoration: const BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -301,16 +435,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Padding(padding: EdgeInsets.only(left: 30)),
                       Icon(
-                        Icons.location_on_outlined,
+                        Icons.mic_none_outlined,
                         size: 40,
                         color: Colors.black,
                       ),
                       Text(
-                        "    Senzory",
+                        "    Hlučnost",
                         style: TextStyle(
                             fontSize: 25,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white),
+                            color: Colors.black),
                       )
                     ],
                   ),

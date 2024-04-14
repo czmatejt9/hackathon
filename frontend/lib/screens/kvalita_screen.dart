@@ -1,97 +1,61 @@
 import 'package:flutter/material.dart';
 import 'package:pie_chart/pie_chart.dart';
 
-class VlhkostScreen extends StatefulWidget {
-  const VlhkostScreen({super.key});
+class KvalitaScreen extends StatefulWidget {
+  final airquality;
+  const KvalitaScreen({super.key, this.airquality});
+
   @override
-  State<VlhkostScreen> createState() => _VlhkostScreenState();
+  State<KvalitaScreen> createState() => _KvalitaScreenState();
 }
 
-class _VlhkostScreenState extends State<VlhkostScreen> {
-  int vlhkost_vzduchu = 75;
+class _KvalitaScreenState extends State<KvalitaScreen> {
   dynamic barva_grafu = Colors.black;
   Map<String, double> dataMap = {"Sobek": 0};
 
   @override
-  void initState() {
-    super.initState();
-    print(vlhkost_vzduchu);
-    if (vlhkost_vzduchu <= 10) {
-      setState(() {
-        dataMap = {
-          "Velmi špatná": vlhkost_vzduchu.toDouble(),
-        };
-        barva_grafu = Colors.red;
-      });
-    }
-    if (vlhkost_vzduchu <= 25 && vlhkost_vzduchu > 10) {
-      setState(() {
-        dataMap = {
-          "Špatná": vlhkost_vzduchu.toDouble(),
-        };
-        barva_grafu = const Color.fromARGB(255, 244, 174, 54);
-      });
-    }
-    if (vlhkost_vzduchu <= 40 && vlhkost_vzduchu > 25) {
-      setState(() {
-        dataMap = {
-          "Střední": vlhkost_vzduchu.toDouble(),
-        };
-        barva_grafu = const Color.fromARGB(255, 193, 244, 54);
-      });
-    }
-    if (vlhkost_vzduchu <= 50 && vlhkost_vzduchu > 40) {
-      setState(() {
-        dataMap = {
-          "Dobrá": vlhkost_vzduchu.toDouble(),
-        };
-        barva_grafu = const Color.fromARGB(255, 57, 244, 54);
-      });
-    }
-    if (vlhkost_vzduchu <= 65 && vlhkost_vzduchu > 50) {
-      setState(() {
-        dataMap = {
-          "Vynikající": vlhkost_vzduchu.toDouble(),
-        };
-        barva_grafu = const Color.fromARGB(255, 54, 244, 216);
-      });
-    }
-    if (vlhkost_vzduchu <= 75 && vlhkost_vzduchu > 65) {
-      setState(() {
-        dataMap = {
-          "Dobrá": (100 - vlhkost_vzduchu).toDouble(),
-        };
-        barva_grafu = const Color.fromARGB(255, 57, 244, 54);
-      });
-    }
-    if (vlhkost_vzduchu <= 85 && vlhkost_vzduchu > 75) {
-      setState(() {
-        dataMap = {
-          "Střední": (100 - vlhkost_vzduchu).toDouble(),
-        };
-        barva_grafu = const Color.fromARGB(255, 193, 244, 54);
-      });
-    }
-    if (vlhkost_vzduchu <= 95 && vlhkost_vzduchu > 85) {
-      setState(() {
-        dataMap = {
-          "Špatná": (100 - vlhkost_vzduchu).toDouble(),
-        };
-        barva_grafu = const Color.fromARGB(255, 244, 174, 54);
-      });
-    }
-    if (vlhkost_vzduchu <= 100 && vlhkost_vzduchu > 95) {
-      setState(() {
-        dataMap = {
-          "Velmi špatná": (100 - vlhkost_vzduchu).toDouble(),
-        };
-        barva_grafu = Colors.red;
-      });
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
+    if (widget.airquality <= 50) {
+      setState(() {
+        dataMap = {
+          "Vynikající": widget.airquality.toDouble(),
+        };
+        barva_grafu = Color.fromARGB(255, 54, 0, 154);
+      });
+    }
+    if (widget.airquality <= 100 && widget.airquality > 50) {
+      setState(() {
+        dataMap = {
+          "Dobrá": widget.airquality.toDouble(),
+        };
+        barva_grafu = Color.fromARGB(255, 54, 244, 228);
+      });
+    }
+    if (widget.airquality <= 150 && widget.airquality > 100) {
+      setState(() {
+        dataMap = {
+          "Střední": widget.airquality.toDouble(),
+        };
+        barva_grafu = const Color.fromARGB(255, 193, 244, 54);
+      });
+    }
+    if (widget.airquality <= 200 && widget.airquality > 150) {
+      setState(() {
+        dataMap = {
+          "Špatná": widget.airquality.toDouble(),
+        };
+        barva_grafu = Color.fromARGB(255, 244, 174, 54);
+      });
+    }
+    if (widget.airquality > 200) {
+      setState(() {
+        dataMap = {
+          "Velmi špatná": widget.airquality.toDouble(),
+        };
+        barva_grafu = Color.fromARGB(255, 255, 0, 0);
+      });
+    }
+
     return Scaffold(
         appBar: AppBar(
           flexibleSpace: Container(
@@ -106,15 +70,15 @@ class _VlhkostScreenState extends State<VlhkostScreen> {
             ),
           ),
           title: const Text(
-            "Vlhkost vzduchu",
+            "Kvalita vzduchu",
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
         body: Container(
           color: Color.fromARGB(118, 184, 184, 184),
-          child: Column(
+          child: ListView(
             children: [
-              Padding(padding: EdgeInsets.only(top: 10)),
+              const Padding(padding: EdgeInsets.only(top: 10)),
               Padding(
                 padding: const EdgeInsets.all(10),
                 child: Container(
@@ -131,7 +95,7 @@ class _VlhkostScreenState extends State<VlhkostScreen> {
                     child: const Padding(
                         padding: EdgeInsets.all(10),
                         child: Text(
-                          "Vlhkost vzduchu je míra vodních par ve vzduchu. Vysoká vlhkost může udržovat hydrataci kůže a sliznic, ale také podporuje růst plísní a roztočů, což může být škodlivé pro zdraví. Naopak nízká vlhkost snižuje riziko plísní, ale může způsobit podráždění dýchacích cest a kůže, a také statickou elektřinu. Optimalizace vlhkosti vzduchu je klíčová pro zajištění pohodlí a zdraví člověka.",
+                          "Kvalita vzduchu je klíčovým indikátorem životního prostředí a lidského zdraví. Ovlivňují ji různé škodlivé látky, jako jsou: \n\nSO2 (oxid siřičitý): Pochází zejména z průmyslových procesů a spalování fosilních paliv obsahujících síru, jako je uhlí a ropa. Může způsobovat dýchací problémy a nepohodlí. \n\nCO (oxid uhelnatý): Vzniká při nedokonalém spalování organických látek, jako jsou uhlí, dřevo nebo benzín. Jeho inhalace může vést k závratím, bolesti hlavy a v extrémních případech i k smrti.\n\nO3 (ozón): Přítomnost ozónu ve spodních vrstvách atmosféry může způsobovat dráždění dýchacích cest a zhoršovat astma.\n\nPM10 a PM2.5 (částice): Drobné částice prachu, sazí a dalších látek ve vzduchu, které mohou proniknout do plic a způsobovat dýchací potíže a zdravotní problémy.\n\nNO2 (oxid dusičitý): Vzniká především při spalování fosilních paliv. Vyšší koncentrace oxidu dusičitého ve vzduchu mohou zhoršovat astma a dráždit dýchací cesty.",
                           style: TextStyle(
                               fontWeight: FontWeight.w600,
                               color: Colors.black,
@@ -164,7 +128,7 @@ class _VlhkostScreenState extends State<VlhkostScreen> {
                         ringStrokeWidth: 32,
                         baseChartColor: const Color.fromARGB(255, 0, 0, 0)!
                             .withOpacity(0.15),
-                        centerText: vlhkost_vzduchu.toString() + "%",
+                        centerText: widget.airquality.toString() + "%",
                         legendOptions: const LegendOptions(
                           showLegendsInRow: false,
                           legendPosition: LegendPosition.right,
@@ -181,7 +145,7 @@ class _VlhkostScreenState extends State<VlhkostScreen> {
                           showChartValuesOutside: true,
                           decimalPlaces: 0,
                         ),
-                        totalValue: 65,
+                        totalValue: 250,
                       ),
                     )),
               ),
