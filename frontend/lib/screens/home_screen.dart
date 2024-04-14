@@ -1,3 +1,5 @@
+import 'package:TODO/air_quality_calculation.dart';
+import 'package:TODO/screens/kvalita_screen.dart';
 import 'package:TODO/screens/teplota_sceen.dart';
 import 'package:TODO/screens/vlhkost_screen.dart';
 import 'package:flutter/gestures.dart';
@@ -5,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:math';
+
+import 'package:latlong2/latlong.dart';
 
 class Location {
   final double latitude;
@@ -101,10 +105,24 @@ class _HomeScreenState extends State<HomeScreen> {
     return locations;
   }
 
+  List points = [];
+  List aqiValues = [];
+
   @override
   Widget build(BuildContext context) {
+    for (var point in widget.data) {
+      points.add(LatLng(point['geometry']['coordinates'][1],
+          point['geometry']['coordinates'][0]));
+      aqiValues.add(AirQuality.calculation(
+          AirQuality.parseValue(point['properties']['so2_1h']),
+          AirQuality.parseValue(point['properties']['co_8h']),
+          AirQuality.parseValue(point['properties']['o3_1h']),
+          AirQuality.parseValue(point['properties']['pm10_24h']),
+          AirQuality.parseValue(point['properties']['pm2_5_1h']),
+          AirQuality.parseValue(point['properties']['no2_1h'])));
+    }
     return Container(
-      color: Color.fromARGB(118, 184, 184, 184),
+      color: const Color.fromARGB(118, 184, 184, 184),
       child: Column(
         children: [
           const Padding(padding: EdgeInsets.only(top: 10)),
@@ -187,7 +205,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           Text(
-                            teplota.toString() + "℃",
+                            aqiValues[0].toString(),
                             style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 20,
@@ -255,7 +273,10 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const VlhkostScreen()),
+                MaterialPageRoute(
+                    builder: (context) => KvalitaScreen(
+                          airquality: aqiValues[0],
+                        )),
               );
             },
             child: Container(
@@ -399,6 +420,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   _currentPosition.latitude,
                   _currentPosition.longitude));
               print(extractLocations(widget.data.toString()));
+              print(widget.data.toString());
             },
             child: Container(
                 decoration: const BoxDecoration(

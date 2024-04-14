@@ -96,7 +96,9 @@ class MyfutureBuilder extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.done) {
           return BottomBar(data: snapshot.data!);
         } else {
-          return const CircularProgressIndicator();
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
         }
       },
     );

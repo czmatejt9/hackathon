@@ -10,7 +10,7 @@ class TeplotaScreen extends StatefulWidget {
 }
 
 class _TeplotaScreenState extends State<TeplotaScreen> {
-  int teplota = 15000000000;
+  int teplota = 21;
   Map<String, double> dataMap = {"Sobek": 0};
   dynamic barva_grafu = Colors.black;
 
