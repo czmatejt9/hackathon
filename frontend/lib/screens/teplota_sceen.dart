@@ -139,7 +139,7 @@ class _TeplotaScreenState extends State<TeplotaScreen> {
                     ringStrokeWidth: 32,
                     baseChartColor:
                         const Color.fromARGB(255, 0, 0, 0)!.withOpacity(0.15),
-                    centerText: teplota.toString() + "%",
+                    centerText: teplota.toString() + "℃",
                     legendOptions: const LegendOptions(
                       showLegendsInRow: false,
                       legendPosition: LegendPosition.right,

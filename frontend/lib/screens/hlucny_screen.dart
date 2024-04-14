@@ -1,56 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:pie_chart/pie_chart.dart';
 
-class KvalitaScreen extends StatefulWidget {
-  final airquality;
-  const KvalitaScreen({super.key, this.airquality});
+class HlukScreen extends StatefulWidget {
+  const HlukScreen({
+    super.key,
+  });
 
   @override
-  State<KvalitaScreen> createState() => _KvalitaScreenState();
+  State<HlukScreen> createState() => _HlukScreenState();
 }
 
-class _KvalitaScreenState extends State<KvalitaScreen> {
+class _HlukScreenState extends State<HlukScreen> {
+  int hluk = 76;
   dynamic barva_grafu = Colors.black;
   Map<String, double> dataMap = {"Sobek": 0};
 
   @override
   Widget build(BuildContext context) {
-    if (widget.airquality <= 50) {
+    if (hluk <= 50) {
       setState(() {
         dataMap = {
-          "Vynikající": widget.airquality.toDouble(),
+          "Vynikající": hluk.toDouble(),
         };
         barva_grafu = Color.fromARGB(255, 54, 0, 154);
       });
     }
-    if (widget.airquality <= 100 && widget.airquality > 50) {
+    if (hluk <= 100 && hluk > 50) {
       setState(() {
         dataMap = {
-          "Dobrá": widget.airquality.toDouble(),
+          "Dobrá": hluk.toDouble(),
         };
         barva_grafu = Color.fromARGB(255, 54, 244, 228);
       });
     }
-    if (widget.airquality <= 150 && widget.airquality > 100) {
+    if (hluk <= 150 && hluk > 100) {
       setState(() {
         dataMap = {
-          "Střední": widget.airquality.toDouble(),
+          "Střední": hluk.toDouble(),
         };
         barva_grafu = const Color.fromARGB(255, 193, 244, 54);
       });
     }
-    if (widget.airquality <= 200 && widget.airquality > 150) {
+    if (hluk <= 200 && hluk > 150) {
       setState(() {
         dataMap = {
-          "Špatná": widget.airquality.toDouble(),
+          "Špatná": hluk.toDouble(),
         };
         barva_grafu = Color.fromARGB(255, 244, 174, 54);
       });
     }
-    if (widget.airquality > 200) {
+    if (hluk > 200) {
       setState(() {
         dataMap = {
-          "Velmi špatná": widget.airquality.toDouble(),
+          "Velmi špatná": hluk.toDouble(),
         };
         barva_grafu = Color.fromARGB(255, 255, 0, 0);
       });
@@ -70,7 +72,7 @@ class _KvalitaScreenState extends State<KvalitaScreen> {
             ),
           ),
           title: const Text(
-            "Kvalita vzduchu",
+            "Hlučné prostření",
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
@@ -95,7 +97,7 @@ class _KvalitaScreenState extends State<KvalitaScreen> {
                     child: const Padding(
                         padding: EdgeInsets.all(10),
                         child: Text(
-                          "Kvalita vzduchu je klíčovým indikátorem životního prostředí a lidského zdraví. Ovlivňují ji různé škodlivé látky, jako jsou: \n\nSO2 (oxid siřičitý): Pochází zejména z průmyslových procesů a spalování fosilních paliv obsahujících síru, jako je uhlí a ropa. Může způsobovat dýchací problémy a nepohodlí. \n\nCO (oxid uhelnatý): Vzniká při nedokonalém spalování organických látek, jako jsou uhlí, dřevo nebo benzín. Jeho inhalace může vést k závratím, bolesti hlavy a v extrémních případech i k smrti.\n\nO3 (ozón): Přítomnost ozónu ve spodních vrstvách atmosféry může způsobovat dráždění dýchacích cest a zhoršovat astma.\n\nPM10 a PM2.5 (částice): Drobné částice prachu, sazí a dalších látek ve vzduchu, které mohou proniknout do plic a způsobovat dýchací potíže a zdravotní problémy.\n\nNO2 (oxid dusičitý): Vzniká především při spalování fosilních paliv. Vyšší koncentrace oxidu dusičitého ve vzduchu mohou zhoršovat astma a dráždit dýchací cesty.",
+                          "Hlučné prostředí ve městě představuje závažný problém pro obyvatele. Nepřetržitý hluk z dopravy, průmyslových zón, stavebních prací a rekreačních aktivit může mít negativní dopady na zdraví a pohodu jednotlivců. Dlouhodobá expozice hluku může způsobit poruchy spánku, zvýšený stres, potíže s koncentrací a zhoršení duševního zdraví. Omezení hluku ve městě je klíčové pro zajištění kvality života obyvatelstva.",
                           style: TextStyle(
                               fontWeight: FontWeight.w600,
                               color: Colors.black,
@@ -128,7 +130,7 @@ class _KvalitaScreenState extends State<KvalitaScreen> {
                         ringStrokeWidth: 32,
                         baseChartColor: const Color.fromARGB(255, 0, 0, 0)!
                             .withOpacity(0.15),
-                        centerText: widget.airquality.toString() + "",
+                        centerText: hluk.toString() + "",
                         legendOptions: const LegendOptions(
                           showLegendsInRow: false,
                           legendPosition: LegendPosition.right,
@@ -149,7 +151,6 @@ class _KvalitaScreenState extends State<KvalitaScreen> {
                       ),
                     )),
               ),
-              Padding(padding: EdgeInsets.all(40)),
             ],
           ),
         ));

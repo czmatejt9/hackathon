@@ -8,8 +8,24 @@ class ProfilScreen extends StatefulWidget {
 }
 
 class _ProfilScreenState extends State<ProfilScreen> {
+  List<String> extractStationNames(String data) {
+    List<String> stationNames = [];
+
+    RegExp regExp = RegExp(r'name: ,');
+    Iterable<Match> matches = regExp.allMatches(data);
+
+    for (Match match in matches) {
+      String name = match.group(1)!;
+      stationNames.add(name.splitMapJoin(","));
+    }
+
+    return stationNames;
+  }
+
   @override
   Widget build(BuildContext context) {
+    List<String> stationNames = extractStationNames(widget.data.toString());
+    stationNames.forEach((name) => print(name));
     return Center(
         child: Container(
       padding: const EdgeInsets.all(16.0),
