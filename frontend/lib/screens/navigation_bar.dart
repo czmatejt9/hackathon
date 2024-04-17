@@ -1,6 +1,6 @@
 import 'package:TODO/screens/home_screen.dart';
 import 'package:TODO/screens/map_screen.dart';
-import 'package:TODO/screens/profil_screen.dart';
+import 'package:TODO/screens/seznam_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:TODO/helpers/get_data.dart';
 
@@ -16,7 +16,7 @@ class _BottomBarState extends State<BottomBar> {
   final List _screens = [
     {"screen": HomeScreen(data: []), "title": "Domovská obrazovka"},
     {"screen": MapScreen(data: []), "title": "Mapa"},
-    {"screen": ProfilScreen(data: []), "title": "Podrobné informace"},
+    {"screen": SeznamScreen(data: []), "title": "Podrobné informace"},
   ];
 
   void _selectScreen(int index) {
@@ -52,7 +52,7 @@ class _BottomBarState extends State<BottomBar> {
         children: <Widget>[
           HomeScreen(data: widget.data),
           MapScreen(data: widget.data),
-          ProfilScreen(data: widget.data),
+          SeznamScreen(data: widget.data),
         ],
         index: _selectedScreenIndex,
       ),

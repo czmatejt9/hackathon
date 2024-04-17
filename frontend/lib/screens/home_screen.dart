@@ -118,7 +118,9 @@ class _HomeScreenState extends State<HomeScreen> {
         c += 1;
       }
     }
+    //  double values_vlhkost = widget.data.last.humidity!;
     double values_vlhkost = 15;
+    // double values_teplota = widget.data.last.temperature!;
     double values_teplota = 15;
 
     return Container(

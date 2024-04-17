@@ -2,14 +2,14 @@ import 'package:TODO/models/data_point.dart';
 import 'package:flutter/material.dart';
 import 'package:TODO/screens/home_screen.dart';
 
-class ProfilScreen extends StatefulWidget {
+class SeznamScreen extends StatefulWidget {
   final List<DataPoint> data;
-  const ProfilScreen({super.key, required this.data});
+  const SeznamScreen({super.key, required this.data});
   @override
-  State<ProfilScreen> createState() => _ProfilScreenState();
+  State<SeznamScreen> createState() => _SeznamScreenState();
 }
 
-class _ProfilScreenState extends State<ProfilScreen> {
+class _SeznamScreenState extends State<SeznamScreen> {
   List<String> extractStationNames(String data) {
     List<String> stationNames = [];
 
