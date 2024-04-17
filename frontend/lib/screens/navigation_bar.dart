@@ -145,7 +145,7 @@ Future<List<dynamic>> getData() async {
   }
 
   // now our sensors
-  await dio.get('http://10.182.36.176:5000').then((response) {
+  /* await dio.get('http://10.182.36.176:5000').then((response) {
     data = response.data['sensors'];
   }).catchError((error) {
     print(error);
@@ -166,6 +166,6 @@ Future<List<dynamic>> getData() async {
     }
     new_new_data.add(DataPoint.fromOurSensor(data[i], lat, lon));
     new_new_data[i + new_data.length].setAqi();
-  }
+  } */
   return new_new_data;
 }
