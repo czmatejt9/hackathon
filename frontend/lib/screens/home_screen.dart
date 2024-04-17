@@ -1,15 +1,11 @@
-import 'package:TODO/air_quality_calculation.dart';
 import 'package:TODO/screens/hlucny_screen.dart';
 import 'package:TODO/screens/kvalita_screen.dart';
 import 'package:TODO/screens/teplota_sceen.dart';
 import 'package:TODO/screens/vlhkost_screen.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:math' as math;
 import 'package:TODO/models/data_point.dart';
-import 'package:latlong2/latlong.dart';
 
 class Location {
   final double latitude;
@@ -122,8 +118,8 @@ class _HomeScreenState extends State<HomeScreen> {
         c += 1;
       }
     }
-    double values_vlhkost = widget.data.last.humidity!;
-    double values_teplota = widget.data.last.temperature!;
+    double values_vlhkost = 15;
+    double values_teplota = 15;
 
     return Container(
       color: const Color.fromARGB(118, 184, 184, 184),

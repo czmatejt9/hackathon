@@ -2,8 +2,7 @@ import 'package:TODO/screens/home_screen.dart';
 import 'package:TODO/screens/map_screen.dart';
 import 'package:TODO/screens/profil_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
-import 'package:TODO/models/data_point.dart';
+import 'package:TODO/helpers/get_data.dart';
 
 class BottomBar extends StatefulWidget {
   final data;
@@ -104,68 +103,4 @@ class MyfutureBuilder extends StatelessWidget {
       },
     );
   }
-}
-
-Future<List<dynamic>> getData() async {
-  // get time in milliseconds
-  final int now = DateTime.now().millisecondsSinceEpoch;
-  Dio dio = Dio();
-  dynamic data;
-  await dio
-      .get(
-          'https://gis.brno.cz/ags1/rest/services/Hosted/chmi/FeatureServer/0/query?time=${now - 2 * 3660000}%2C+$now&outFields=name%2C+co_8h%2C+o3_1h%2C+no2_1h%2C+so2_1h%2C+pm10_1h%2C+pm2_5_1h%2C+pm10_24h%2C+actualized&returnGeometry=true&f=geojson')
-      .then((response) {
-    data = response.data['features'];
-  }).catchError((error) {
-    print(error);
-    return Future(() => null);
-  });
-  // remove duplicate names and only keep the one with biggest timestamp TODO
-  List new_data = [];
-  for (int i = 0; i < data.length; i++) {
-    bool found = false;
-    for (int j = 0; j < new_data.length; j++) {
-      if (data[i]['properties']['name'] == new_data[j]['properties']['name']) {
-        if (data[i]['properties']['actualized'] >
-            new_data[j]['properties']['actualized']) {
-          new_data[j] = data[i];
-        }
-        found = true;
-        break;
-      }
-    }
-    if (!found) {
-      new_data.add(data[i]);
-    }
-  }
-  List<DataPoint> new_new_data = [];
-  for (int i = 0; i < new_data.length; i++) {
-    new_new_data.add(DataPoint.fromBrnoApi(new_data[i]));
-    new_new_data[i].setAqi();
-  }
-
-  // now our sensors
-  /* await dio.get('http://10.182.36.176:5000').then((response) {
-    data = response.data['sensors'];
-  }).catchError((error) {
-    print(error);
-    return Future(() => null);
-  });
-  for (int i = 0; i < data.length; i++) {
-    if (i == 2) {
-      new_new_data.last.volume = double.parse(data[i]['value'].substring(1));
-      continue;
-    }
-    String? lat, lon;
-    if (i == 0) {
-      lat = "49.1781172";
-      lon = "16.6042969";
-    } else {
-      lat = "49.1812072";
-      lon = "16.6040314";
-    }
-    new_new_data.add(DataPoint.fromOurSensor(data[i], lat, lon));
-    new_new_data[i + new_data.length].setAqi();
-  } */
-  return new_new_data;
 }

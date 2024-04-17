@@ -44,7 +44,7 @@ class _KvalitaScreenState extends State<KvalitaScreen> {
         dataMap = {
           "Špatná": widget.airquality.toDouble(),
         };
-        barva_grafu = Color.fromARGB(255, 244, 174, 54);
+        barva_grafu = const Color.fromARGB(255, 244, 174, 54);
       });
     }
     if (widget.airquality > 200) {

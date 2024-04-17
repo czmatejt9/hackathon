@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
-import 'package:dio/dio.dart';
-import 'package:TODO/air_quality_calculation.dart';
 import 'package:TODO/models/data_point.dart';
 
 class MapScreen extends StatefulWidget {
@@ -38,7 +36,7 @@ class _MapScreenState extends State<MapScreen> {
         openStreetMapTileLayer,
         CurrentLocationLayer(),
         MarkerLayer(markers: [
-          for (int i = 0; i < widget.data.length; i++)
+          for (int i = widget.data.length - 1; i >= 0; i--)
             Marker(
               width: 33.0,
               height: 33.0,
@@ -101,31 +99,32 @@ class _MapScreenState extends State<MapScreen> {
                   );
                 },
                 child: Container(
-                    decoration: BoxDecoration(
-                      color: widget.data[i].aqi != null
-                          ? widget.data[i].aqi! > 50
-                              ? widget.data[i].aqi! > 100
-                                  ? Colors.red
-                                  : Colors.yellow
-                              : Colors.green
-                          : Colors.black,
-                      shape: widget.data[i].type == "BRNO_API"
-                          ? BoxShape.circle
-                          : BoxShape.rectangle,
-                    ),
-                    child: Center(
-                      child: Text(
-                        widget.data[i].type == 'BRNO_API'
-                            ? widget.data[i].aqi.toString()
-                            : widget.data[i].temperature.toString(),
-                        style: TextStyle(
-                          color: widget.data[i].type == 'BRNO_API'
-                              ? Colors.black
-                              : Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
+                  decoration: BoxDecoration(
+                    color: widget.data[i].aqi != null
+                        ? widget.data[i].aqi! > 50
+                            ? widget.data[i].aqi! > 100
+                                ? Colors.red
+                                : Colors.yellow
+                            : Colors.green
+                        : Colors.black,
+                    shape: widget.data[i].type == "BRNO_API"
+                        ? BoxShape.circle
+                        : BoxShape.rectangle,
+                  ),
+                  child: Center(
+                    child: Text(
+                      widget.data[i].type == 'BRNO_API'
+                          ? widget.data[i].aqi.toString()
+                          : widget.data[i].temperature.toString(),
+                      style: TextStyle(
+                        color: widget.data[i].type == 'BRNO_API'
+                            ? Colors.black
+                            : Colors.white,
+                        fontWeight: FontWeight.bold,
                       ),
-                    )),
+                    ),
+                  ),
+                ),
               ),
             )
         ]),

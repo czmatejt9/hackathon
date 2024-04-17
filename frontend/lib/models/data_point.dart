@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:flutter/foundation.dart';
 import 'package:latlong2/latlong.dart';
 
 class DataPoint {
@@ -49,10 +52,10 @@ class DataPoint {
       windSpeed: json['properties']['wind_speed'],
       so2_1h: magicParse(json['properties']['so2_1h']),
       co_8h: magicParse(json['properties']['co_8h']) != null
-          ? magicParse(json['properties']['co_8h']) / 100
+          ? magicParse(json['properties']['co_8h'])! / 100
           : null,
       o3_1h: magicParse(json['properties']['o3_1h']) != null
-          ? magicParse(json['properties']['o3_1h']) / 10
+          ? magicParse(json['properties']['o3_1h'])! / 10
           : null,
       pm10_24h: magicParse(json['properties']['pm10_24h']),
       pm2_5_1h: magicParse(json['properties']['pm2_5_1h']),
@@ -68,7 +71,7 @@ class DataPoint {
   factory DataPoint.fromOurSensor(
       Map<String, dynamic> json, String lat, String lon) {
     // TODO change sensor id to coordinates
-    // TODO add more sensor types in the ffuture
+    // TODO add more sensor types in the future
     String type = json['type'];
     double? micValue;
     double? tempValue;
@@ -94,7 +97,36 @@ class DataPoint {
     );
   }
 
-  static double magicParse(dynamic value) {
+  factory DataPoint.fromNetAtmo(double timestamp, Map<String, dynamic> json) {
+    Map measurements = json['measures'];
+    Map<String, dynamic> measurementsValues = {};
+    for (Map value in measurements.values) {
+      if (!value.containsKey('res')) {
+        continue;
+      }
+      Map vals = value['res'];
+      List<dynamic> valueNum = vals.values.toList()[0];
+      for (int i = 0; i < valueNum.length; i++) {
+        print(value['type'][i]);
+        print(valueNum[i]);
+        if (valueNum[i] != null) {
+          measurementsValues[value['type'][i]] = valueNum[i];
+        }
+      }
+    }
+
+    return DataPoint(
+      position: LatLng(json['place']['location'][1].toDouble(),
+          json['place']['location'][0].toDouble()),
+      timestamp: timestamp,
+      type: "NETATMO",
+      temperature: magicParse(measurementsValues['temperature']),
+      humidity: magicParse(measurementsValues['humidity']),
+      pressure: magicParse(measurementsValues['pressure']),
+    );
+  }
+
+  static double? magicParse(dynamic value) {
     // because some of the numbers in the API are strings for some reason?
     if (value is String) {
       return double.parse(value);
@@ -103,7 +135,7 @@ class DataPoint {
     } else if (value is int) {
       return value.toDouble();
     } else {
-      return 0;
+      return null;
     }
   }
 
