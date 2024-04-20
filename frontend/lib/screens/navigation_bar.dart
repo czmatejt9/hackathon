@@ -107,7 +107,6 @@ class MyfutureBuilder extends StatelessWidget {
             // když se nenačte netatmo tak to nebude redka
             return Scaffold();
           }
-          print(snapshot.data.toString());
           return BottomBar(
             data: snapshot.data,
           );

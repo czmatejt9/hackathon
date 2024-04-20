@@ -1,61 +1,73 @@
+import 'package:TODO/models/data_point.dart';
 import 'package:flutter/material.dart';
 import 'package:pie_chart/pie_chart.dart';
 
 class HlukScreen extends StatefulWidget {
-  const HlukScreen({
-    super.key,
-  });
+  final List<DataPoint> data;
+  final nearestdataPointVolume;
+  const HlukScreen(
+      {super.key, required this.data, required this.nearestdataPointVolume});
 
   @override
   State<HlukScreen> createState() => _HlukScreenState();
 }
 
 class _HlukScreenState extends State<HlukScreen> {
-  int hluk = 76;
   dynamic barva_grafu = Colors.black;
   Map<String, double> dataMap = {"Sobek": 0};
-
   @override
   Widget build(BuildContext context) {
-    if (hluk <= 50) {
+    if (widget.nearestdataPointVolume == null) {
       setState(() {
         dataMap = {
-          "Vynikající": hluk.toDouble(),
+          "N/A": 0,
         };
-        barva_grafu = Color.fromARGB(255, 54, 0, 154);
+        barva_grafu = const Color.fromARGB(255, 0, 0, 0);
       });
-    }
-    if (hluk <= 100 && hluk > 50) {
-      setState(() {
-        dataMap = {
-          "Dobrá": hluk.toDouble(),
-        };
-        barva_grafu = Color.fromARGB(255, 54, 244, 228);
-      });
-    }
-    if (hluk <= 150 && hluk > 100) {
-      setState(() {
-        dataMap = {
-          "Střední": hluk.toDouble(),
-        };
-        barva_grafu = const Color.fromARGB(255, 193, 244, 54);
-      });
-    }
-    if (hluk <= 200 && hluk > 150) {
-      setState(() {
-        dataMap = {
-          "Špatná": hluk.toDouble(),
-        };
-        barva_grafu = Color.fromARGB(255, 244, 174, 54);
-      });
-    }
-    if (hluk > 200) {
-      setState(() {
-        dataMap = {
-          "Velmi špatná": hluk.toDouble(),
-        };
-        barva_grafu = Color.fromARGB(255, 255, 0, 0);
-      });
+    } else {
+      if (widget.nearestdataPointVolume <= 50) {
+        setState(() {
+          dataMap = {
+            "Vynikající": widget.nearestdataPointVolume,
+          };
+          barva_grafu = const Color.fromARGB(255, 54, 0, 154);
+        });
+      }
+      if (widget.nearestdataPointVolume <= 100 &&
+          widget.nearestdataPointVolume > 50) {
+        setState(() {
+          dataMap = {
+            "Dobrá": widget.nearestdataPointVolume,
+          };
+          barva_grafu = const Color.fromARGB(255, 54, 244, 228);
+        });
+      }
+      if (widget.nearestdataPointVolume <= 150 &&
+          widget.nearestdataPointVolume > 100) {
+        setState(() {
+          dataMap = {
+            "Střední": widget.nearestdataPointVolume,
+          };
+          barva_grafu = const Color.fromARGB(255, 193, 244, 54);
+        });
+      }
+      if (widget.nearestdataPointVolume <= 200 &&
+          widget.nearestdataPointVolume > 150) {
+        setState(() {
+          dataMap = {
+            "Špatná": widget.nearestdataPointVolume,
+          };
+          barva_grafu = const Color.fromARGB(255, 244, 174, 54);
+        });
+      }
+      if (widget.nearestdataPointVolume > 200) {
+        setState(() {
+          dataMap = {
+            "Velmi špatná": widget.nearestdataPointVolume,
+          };
+          barva_grafu = const Color.fromARGB(255, 255, 0, 0);
+        });
+      }
     }
 
     return Scaffold(
@@ -128,9 +140,9 @@ class _HlukScreenState extends State<HlukScreen> {
                         initialAngleInDegree: 0,
                         chartType: ChartType.ring,
                         ringStrokeWidth: 32,
-                        baseChartColor: const Color.fromARGB(255, 0, 0, 0)!
+                        baseChartColor: const Color.fromARGB(255, 0, 0, 0)
                             .withOpacity(0.15),
-                        centerText: hluk.toString() + "",
+                        centerText: "${widget.nearestdataPointVolume ?? "N/A"}",
                         legendOptions: const LegendOptions(
                           showLegendsInRow: false,
                           legendPosition: LegendPosition.right,

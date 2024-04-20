@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:math' as math;
 import 'package:TODO/models/data_point.dart';
+import 'package:latlong2/latlong.dart';
 
 class Location {
   final double latitude;
@@ -40,8 +41,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int teplota = 15;
-  int vlhkost = 53;
   Position _currentPosition = Position(
       accuracy: 0,
       longitude: 0,
@@ -55,6 +54,19 @@ class _HomeScreenState extends State<HomeScreen> {
       speedAccuracy: 0);
 
   // Zadaná geolokace
+  DataPoint findDataPointwithLocation(Location poloha) {
+    for (DataPoint value in widget.data) {
+      if (value.position.latitude == poloha.latitude &&
+          value.position.longitude == poloha.longitude) {
+        return value;
+      }
+    }
+    // sorry smurfe nevim jak to líp napsat fixnito pls dík
+    return DataPoint(
+        position: LatLng(poloha.latitude, poloha.longitude),
+        timestamp: DateTime.now().millisecondsSinceEpoch.toDouble(),
+        type: "Error");
+  }
 
   Location findNearestLocation(
       Location targetLocation, List<Location> locations) {
@@ -86,15 +98,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return locations;
   }
 
-  List aqiValues = [];
-
   @override
   Widget build(BuildContext context) {
-    for (var point in widget.data) {
-      if (point.aqi != null) {
-        aqiValues.add(point.aqi);
-      }
-    }
     Geolocator.getCurrentPosition(
             desiredAccuracy: LocationAccuracy.best,
             forceAndroidLocationManager: true)
@@ -110,18 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     Location nearestLocation =
         findNearestLocation(targetLocation, extractLocations(widget.data));
-    int values = 0;
-    int c = 0;
-    for (DataPoint point in widget.data) {
-      if (point.aqi != null) {
-        values += point.aqi!;
-        c += 1;
-      }
-    }
-    //  double values_vlhkost = widget.data.last.humidity!;
-    double values_vlhkost = 15;
-    // double values_teplota = widget.data.last.temperature!;
-    double values_teplota = 15;
+    DataPoint nearestDataPoint = findDataPointwithLocation(nearestLocation);
 
     return Container(
       color: const Color.fromARGB(118, 184, 184, 184),
@@ -181,14 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           Text(
-                            Location.distance(
-                                        nearestLocation.latitude,
-                                        _currentPosition.latitude,
-                                        nearestLocation.longitude,
-                                        _currentPosition.longitude)
-                                    .round()
-                                    .toString() +
-                                "m",
+                            "${Location.distance(nearestLocation.latitude, _currentPosition.latitude, nearestLocation.longitude, _currentPosition.longitude).round()}m",
                             style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 20,
@@ -214,7 +201,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           Text(
-                            (values / c).round().toString(),
+                            nearestDataPoint.aqi.toString(),
                             style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 20,
@@ -240,7 +227,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           Text(
-                            values_vlhkost.round().toString() + "%",
+                            "${nearestDataPoint.humidity ?? "N/A".toString()}%",
                             style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 20,
@@ -266,7 +253,33 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           Text(
-                            values_teplota.round().toString() + "℃",
+                            "${nearestDataPoint.temperature ?? "N/A".toString()}℃",
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      const Padding(padding: EdgeInsets.only(top: 10)),
+                      Row(
+                        children: [
+                          const Padding(padding: EdgeInsets.all(20)),
+                          const Icon(
+                            Icons.volume_down_outlined,
+                            color: Colors.black,
+                            size: 25,
+                          ),
+                          const Padding(padding: EdgeInsets.all(10)),
+                          const Text(
+                            "Hlučnost  ",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 20,
+                            ),
+                          ),
+                          Text(
+                            "${nearestDataPoint.volume ?? "N/A".toString()}db",
                             style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 20,
@@ -284,7 +297,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => KvalitaScreen(
-                          airquality: (values / c).round(),
+                          airquality: 25,
                         )),
               );
             },
@@ -326,8 +339,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>
-                        VlhkostScreen(vlhkost: values_vlhkost.round())),
+                    builder: (context) => VlhkostScreen(vlhkost: 15)),
               );
             },
             child: Container(
@@ -369,7 +381,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => TeplotaScreen(
-                          teplota: values_teplota.round(),
+                          teplota: 25,
                         )),
               );
             },
@@ -410,7 +422,11 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const HlukScreen()),
+                MaterialPageRoute(
+                    builder: (context) => HlukScreen(
+                          data: widget.data,
+                          nearestdataPointVolume: nearestDataPoint.volume,
+                        )),
               );
             },
             child: Container(
@@ -431,7 +447,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Padding(padding: EdgeInsets.only(left: 30)),
                       Icon(
-                        Icons.mic_none_outlined,
+                        Icons.volume_down_outlined,
                         size: 40,
                         color: Colors.black,
                       ),

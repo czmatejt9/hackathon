@@ -84,6 +84,5 @@ Future<List<DataPoint>> getNetAtmoData(Dio dio) async {
     new_data.add(DataPoint.fromNetAtmo(timestamp, data[i]));
     new_data.last.setAqi();
   }
-  print("netatmo_real");
   return new_data;
 }
