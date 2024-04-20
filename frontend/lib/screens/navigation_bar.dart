@@ -1,12 +1,18 @@
 import 'package:TODO/screens/home_screen.dart';
 import 'package:TODO/screens/map_screen.dart';
 import 'package:TODO/screens/seznam_screen.dart';
+import 'package:TODO/screens/teplota_sceen.dart';
 import 'package:flutter/material.dart';
 import 'package:TODO/helpers/get_data.dart';
 
 class BottomBar extends StatefulWidget {
+  // ignore: prefer_typing_uninitialized_variables
   final data;
-  const BottomBar({super.key, required this.data});
+
+  const BottomBar({
+    super.key,
+    required this.data,
+  });
   @override
   State<BottomBar> createState() => _BottomBarState();
 }
@@ -14,9 +20,9 @@ class BottomBar extends StatefulWidget {
 class _BottomBarState extends State<BottomBar> {
   int _selectedScreenIndex = 0;
   final List _screens = [
-    {"screen": HomeScreen(data: []), "title": "Domovská obrazovka"},
-    {"screen": MapScreen(data: []), "title": "Mapa"},
-    {"screen": SeznamScreen(data: []), "title": "Podrobné informace"},
+    {"screen": const HomeScreen(data: []), "title": "Domovská obrazovka"},
+    {"screen": MapScreen(data: const []), "title": "Mapa"},
+    {"screen": const SeznamScreen(data: []), "title": "Podrobné informace"},
   ];
 
   void _selectScreen(int index) {
@@ -47,14 +53,17 @@ class _BottomBarState extends State<BottomBar> {
                 ]),
           ),
         ),
+        actions: <Widget>[
+          IconButton(onPressed: () {}, icon: const Icon(Icons.cable_outlined))
+        ],
       ),
       body: IndexedStack(
+        index: _selectedScreenIndex,
         children: <Widget>[
           HomeScreen(data: widget.data),
           MapScreen(data: widget.data),
           SeznamScreen(data: widget.data),
         ],
-        index: _selectedScreenIndex,
       ),
       bottomNavigationBar: BottomNavigationBar(
         showSelectedLabels: false,
@@ -87,14 +96,21 @@ class _BottomBarState extends State<BottomBar> {
 }
 
 class MyfutureBuilder extends StatelessWidget {
-  MyfutureBuilder({super.key});
+  const MyfutureBuilder({super.key});
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<dynamic>>(
       future: getData(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          return BottomBar(data: snapshot.data!);
+          if (snapshot.data == null) {
+            // když se nenačte netatmo tak to nebude redka
+            return Scaffold();
+          }
+          print(snapshot.data.toString());
+          return BottomBar(
+            data: snapshot.data,
+          );
         } else {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
