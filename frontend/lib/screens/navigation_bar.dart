@@ -1,7 +1,11 @@
+import 'dart:io';
+
+import 'package:TODO/helpers/location_helper.dart';
+import 'package:TODO/main.dart';
+import 'package:TODO/screens/airsob_screen.dart';
 import 'package:TODO/screens/home_screen.dart';
 import 'package:TODO/screens/map_screen.dart';
 import 'package:TODO/screens/seznam_screen.dart';
-import 'package:TODO/screens/teplota_sceen.dart';
 import 'package:flutter/material.dart';
 import 'package:TODO/helpers/get_data.dart';
 
@@ -22,7 +26,13 @@ class _BottomBarState extends State<BottomBar> {
   final List _screens = [
     {"screen": const HomeScreen(data: []), "title": "Domovská obrazovka"},
     {"screen": MapScreen(data: const []), "title": "Mapa"},
-    {"screen": const SeznamScreen(data: []), "title": "Podrobné informace"},
+    {
+      "screen": SeznamScreen(
+        data: [],
+        poloha: Location(15, 15),
+      ),
+      "title": "Podrobné informace"
+    },
   ];
 
   void _selectScreen(int index) {
@@ -54,7 +64,11 @@ class _BottomBarState extends State<BottomBar> {
           ),
         ),
         actions: <Widget>[
-          IconButton(onPressed: () {}, icon: const Icon(Icons.cable_outlined))
+          IconButton(
+              onPressed: () {
+                const MyApp();
+              },
+              icon: const Icon(Icons.refresh_outlined))
         ],
       ),
       body: IndexedStack(
@@ -62,7 +76,10 @@ class _BottomBarState extends State<BottomBar> {
         children: <Widget>[
           HomeScreen(data: widget.data),
           MapScreen(data: widget.data),
-          SeznamScreen(data: widget.data),
+          SeznamScreen(
+            data: widget.data,
+            poloha: Location(15, 15),
+          ),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -105,14 +122,48 @@ class MyfutureBuilder extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.data == null) {
             // když se nenačte netatmo tak to nebude redka
-            return Scaffold();
+            return const Scaffold(
+              body: Center(
+                child: Text(
+                  "Something went wrong, please try again later",
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+            );
           }
-          return BottomBar(
-            data: snapshot.data,
-          );
+
+          return OurfutureBuilder(data: snapshot.data);
         } else {
           return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+            body: Center(
+                child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Air",
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 28, 169, 212),
+                        fontSize: 60,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      "SOB",
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 14, 211, 211),
+                        fontSize: 60,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                  ],
+                ),
+                CircularProgressIndicator.adaptive()
+              ],
+            )),
           );
         }
       },

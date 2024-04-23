@@ -41,6 +41,7 @@ dependencies:
   flutter_map_location_marker: ^8.0.8
   dio: ^5.4.3
   pie_chart: ^5.4.0
+  flutter_animate: ^4.5.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

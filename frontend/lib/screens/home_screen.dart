@@ -4,34 +4,8 @@ import 'package:TODO/screens/teplota_sceen.dart';
 import 'package:TODO/screens/vlhkost_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'dart:math' as math;
 import 'package:TODO/models/data_point.dart';
-import 'package:latlong2/latlong.dart';
-
-class Location {
-  final double latitude;
-  final double longitude;
-
-  Location(this.latitude, this.longitude);
-
-  static double distance(double lat1, double lat2, double lon1, double lon2) {
-    const R = 6371e3; // metres
-    double phi1 = lat1 * math.pi / 180; // φ, λ in radians
-    double phi2 = lat2 * math.pi / 180;
-    double deltaPhi = (lat2 - lat1) * math.pi / 180;
-    double deltaLambda = (lon2 - lon1) * math.pi / 180;
-
-    double a = math.sin(deltaPhi / 2) * math.sin(deltaPhi / 2) +
-        math.cos(phi1) *
-            math.cos(phi2) *
-            math.sin(deltaLambda / 2) *
-            math.sin(deltaLambda / 2);
-
-    double c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
-
-    return R * c; // in metres
-  }
-}
+import 'package:TODO/helpers/location_helper.dart';
 
 class HomeScreen extends StatefulWidget {
   final List<DataPoint> data;
@@ -53,21 +27,6 @@ class _HomeScreenState extends State<HomeScreen> {
       speed: 0,
       speedAccuracy: 0);
 
-  // Zadaná geolokace
-  DataPoint findDataPointwithLocation(Location poloha) {
-    for (DataPoint value in widget.data) {
-      if (value.position.latitude == poloha.latitude &&
-          value.position.longitude == poloha.longitude) {
-        return value;
-      }
-    }
-    // sorry smurfe nevim jak to líp napsat fixnito pls dík
-    return DataPoint(
-        position: LatLng(poloha.latitude, poloha.longitude),
-        timestamp: DateTime.now().millisecondsSinceEpoch.toDouble(),
-        type: "Error");
-  }
-
   Location findNearestLocation(
       Location targetLocation, List<Location> locations) {
     Location nearestLocation = Location(49.6834, 16.3556);
@@ -87,17 +46,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return nearestLocation;
   }
 
-  List<Location> extractLocations(List<DataPoint> data) {
-    List<Location> locations = [];
-
-    for (DataPoint point in data) {
-      locations
-          .add(Location(point.position.latitude, point.position.longitude));
-    }
-
-    return locations;
-  }
-
   @override
   Widget build(BuildContext context) {
     Geolocator.getCurrentPosition(
@@ -107,19 +55,18 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _currentPosition = position;
       });
-    }).catchError((e) {
-      print(e);
-    });
-    Location targetLocation =
-        Location(_currentPosition.latitude, _currentPosition.longitude);
+    }).catchError((e) {});
 
-    Location nearestLocation =
-        findNearestLocation(targetLocation, extractLocations(widget.data));
-    DataPoint nearestDataPoint = findDataPointwithLocation(nearestLocation);
+    Location nearestLocation = findNearestLocation(
+        Location(_currentPosition.latitude, _currentPosition.longitude),
+        extractLocations(widget.data));
+
+    DataPoint nearestDataPoint =
+        findDataPointwithLocation(nearestLocation, widget.data);
 
     return Container(
       color: const Color.fromARGB(118, 184, 184, 184),
-      child: Column(
+      child: ListView(
         children: [
           const Padding(padding: EdgeInsets.only(top: 10)),
           TextButton(
